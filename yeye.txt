@@ -1,0 +1,620 @@
+/******************************************
+Projecto de Fundamentos de Programacao II
+Tema: Sistema de gestão energetica
+Nome: Osvaldo Quissola, N. 36452
+File Name: Analise.java
+Data: 27.05.2026
+*******************************************/
+
+public class Analise {
+    
+    /*
+     * 1. OBJECTIVO GERAL
+     * Desenvolver um sistema de gestão energética capaz de administrar o cadastro 
+     * de clientes, controlar pagamentos, gerenciar áreas de distribuição de energia 
+     * e contadores, enviar notificações sobre possíveis cortes, interrupções e 
+     * quedas no fornecimento de energia elétrica, além de permitir que os clientes 
+     * acompanhem e gerenciem o seu consumo energético, efetuem pagamentos, 
+     * visualizem as suas faturas em atraso para liquidação e interajam diretamente 
+     * com o provedor de energia para solicitações, consultas e acompanhamento de serviços.
+     * 
+     * 2. OBJECTIVOS ESPECÍFICOS
+     * - Implementar controlo de acesso baseado em perfis (RBAC)
+     * - Cadastrar e gerenciar clientes (pessoas físicas e jurídicas)
+     * - Controlar pagamentos de facturas de energia
+     * - Gerir áreas de distribuição (províncias, municípios, bairros)
+     * - Monitorizar contadores de energia (analógicos e digitais)
+     * - Enviar notificações automáticas sobre cortes programados e emergências
+     * - Permitir visualização de consumo energético em tempo real ou histórico
+     * - Gerir solicitações de clientes (ligação nova, reparação, troca de contador)
+     * - Gerar relatórios de consumo, facturação e inadimplência
+     * - Permitir que o cliente efetue pagamentos das suas facturas directamente no sistema
+     * - Permitir que o cliente visualize as suas facturas em atraso (em traço) para liquidação
+     * - Definir menus dinâmicos baseados no perfil do usuário logado
+     * 
+     * 3. GUI - GRAPHIC USER INTERFACE (Telas)
+     * 
+     * 3.1 - Telas de Autenticação
+     *     - LoginVisao: Autenticação de utilizadores
+     *     - RecuperarSenhaVisao: Recuperação de palavra-passe
+     *     
+     * 3.2 - Telas Principais (Dashboard)
+     *     - MenuPrincipalVisao: Menu DINÂMICO gerado conforme perfil do usuário
+     *     - DashboardClienteVisao: Visão personalizada para clientes
+     *     - DashboardAdminVisao: Visão personalizada para administradores
+     *     - DashboardTecnicoVisao: Visão personalizada para técnicos
+     *     - DashboardGestorVisao: Visão personalizada para gestores
+     *     
+     * 3.3 - Telas de Gestão de Utilizadores e Perfis (RBAC)
+     *     - UsuarioCadastroVisao: Cadastro de novos usuários
+     *     - UsuarioConsultaVisao: Consulta de usuários
+     *     - UsuarioEdicaoVisao: Edição de dados do usuário
+     *     - PerfilCadastroVisao: Cadastro de perfis (ADMIN, CLIENTE, TECNICO, GESTOR)
+     *     - PerfilConsultaVisao: Consulta de perfis
+     *     - PerfilEdicaoVisao: Edição de perfis
+     *     - MenuCadastroVisao: Cadastro de menus do sistema
+     *     - MenuConsultaVisao: Consulta de menus
+     *     - PerfilMenuAtribuicaoVisao: Atribuição de menus a perfis
+     *     
+     * 3.4 - Telas de Gestão de Clientes
+     *     - ClienteCadastroVisao: Cadastro de novos clientes
+     *     - ClienteConsultaVisao: Consulta de clientes cadastrados
+     *     - ClienteEdicaoVisao: Edição de dados do cliente
+     *     
+     * 3.5 - Telas de Gestão de Áreas e Contadores
+     *     - AreaDistribuicaoVisao: Gestão de áreas de distribuição
+     *     - ContadorGestaoVisao: Cadastro e manutenção de contadores
+     *     - ContadorLeituraVisao: Leitura de consumos
+     *     
+     * 3.6 - Telas de Facturação e Pagamentos (Cliente)
+     *     - MinhasFacturasVisao: Lista todas as facturas do cliente
+     *     - FacturasAtrasoVisao: Mostra facturas em traço (vencidas)
+     *     - DetalheFacturaVisao: Visualização detalhada de uma factura
+     *     - PagamentoOnlineVisao: Interface para o cliente efetuar pagamento
+     *     - HistoricoPagamentosVisao: Histórico de pagamentos do cliente
+     *     - ComprovativoPagamentoVisao: Exibição e impressão do comprovativo
+     *     
+     * 3.7 - Telas de Gestão de Pessoas
+     *     - PessoaCadastroVisao: Cadastro de dados pessoais
+     *     - PessoaConsultaVisao: Consulta de pessoas
+     *     - PessoaEdicaoVisao: Edição de dados pessoais
+     *     
+     * 4. ESTRUTURA RBAC (Role-Based Access Control)
+     * 
+     * 4.1 - Tabela Pessoa (Dados Pessoais)
+     *     - id (PK)
+     *     - numeroBI
+     *     - nomeCompleto
+     *     - nomePai
+     *     - nomeMae
+     *     - dataNascimento
+     *     - estadoCivil
+     *     - genero
+     *     - residencia
+     *     - naturalidade
+     *     - documentoEmitidoEm
+     *     - documentoValidoAte
+     *     - altura
+	 *     - usuarioId (FK → Ususario.id)
+     *     - activo
+     * 
+     * 4.2 - Tabela Perfil (Role)
+     *     - id (PK)
+     *     - nome (ADMIN, CLIENTE, TECNICO, GESTOR, CONTABILISTA)
+     *     - descricao
+     *     - nivelAcesso (1-10, onde 10 é super admin)
+     *     - activo
+     * 
+     * 4.3 - Tabela Usuario (Relaciona Pessoa e Perfil)
+     *     - id (PK)
+     *     - perfilId (FK → Perfil.id)
+     *     - nomeUsuario (login)
+     *     - email
+     *     - numeroTelefone
+     *     - palavraPass (hash SHA-256)
+     *     - dataUltimoAcesso
+     *     - tentativasFalhas
+     *     - bloqueado (boolean)
+     *     - dataBloqueio
+     *     - activo
+     * 
+     * 4.4 - Tabela Menu (Estrutura de Menus)
+     *     - id (PK)
+     *     - menuPaiId (FK → Menu.id, para submenus, pode ser NULL)
+     *     - codigo (identificador único, ex: "CLIENTE.FACTURAS.ATRASO")
+     *     - nome (ex: "Facturas em Atraso")
+     *     - descricao (ex: "Visualiza facturas vencidas para pagamento")
+     *     - icone (nome do ícone, ex: "warning.png")
+     *     - caminhoClasse (Classe da view, ex: "views.cliente.FacturasAtrasoVisao")
+     *     - ordem (para ordenação dos menus)
+     *     - nivelMinimoAcesso (nível mínimo necessário)
+     *     - activo
+     * 
+     * 4.5 - Tabela PerfilMenu (Relacionamento Perfil x Menu)
+     *     - id (PK)
+     *     - perfilId (FK → Perfil.id)
+     *     - menuId (FK → Menu.id)
+     *     - podeVisualizar (boolean)
+     *     - podeCriar (boolean)
+     *     - podeEditar (boolean)
+     *     - podeEliminar (boolean)
+     *     - dataAtribuicao
+     * 
+     * 5. ENTIDADES PRINCIPAIS DO NEGÓCIO
+     * 
+     * 5.1 - ClienteModelo (Extende Pessoa ou está relacionado)
+     *     int id;
+     *     String pessoaId; (FK → Pessoa.id)
+     *     String tipoCliente (PESSOA_FISICA, PESSOA_JURIDICA);
+     *     String nif;
+     *     String areaDistribuicaoId;
+     *     String contadorId;
+     *     Date dataCadastro;
+     *     double saldoDevedor;
+     *     boolean activo;
+     * 
+     * 5.2 - AreaDistribuicaoModelo
+     *     int id;
+     *     String provincia;
+     *     String municipio;
+     *     String comuna;
+     *     String bairro;
+     *     String codigoPostal;
+     *     String subestacaoId;
+     *     boolean activo;
+     * 
+     * 5.3 - ContadorModelo
+     *     int id;
+     *     String numeroSerie;
+     *     String tipoContador (ANALOGICO, DIGITAL, INTELIGENTE);
+     *     String clienteId;
+     *     String areaId;
+     *     Date dataInstalacao;
+     *     double limiteConsumo;
+     *     boolean activo;
+     * 
+     * 5.4 - LeituraConsumoModelo
+     *     int id;
+     *     int contadorId;
+     *     double leituraAnterior;
+     *     double leituraActual;
+     *     double consumoKwh;
+     *     Date periodoInicio;
+     *     Date periodoFim;
+     *     Date dataLeitura;
+     *     String responsavelLeitura;
+     * 
+     * 5.5 - TarifaModelo
+     *     int id;
+     *     String nomeTarifa;
+     *     double precoKwh;
+     *     double taxaFixa;
+     *     double multaAtraso;
+     *     Date dataVigor;
+     *     boolean activo;
+     * 
+     * 5.6 - FacturaModelo
+     *     int id;
+     *     String clienteId;
+     *     String contadorId;
+     *     String leituraId;
+     *     String tarifaId;
+     *     double consumoKwh;
+     *     double valorTotal;
+     *     double valorMulta;
+     *     double valorActualizado;
+     *     Date dataEmissao;
+     *     Date dataVencimento;
+     *     Date dataPagamento;
+     *     String status;
+     *     int diasAtraso;
+     * 
+     * 5.7 - PagamentoModelo
+     *     int id;
+     *     int facturaId;
+     *     String clienteId;
+     *     double valorPago;
+     *     double valorMultaPaga;
+     *     Date dataPagamento;
+     *     String metodoPagamento;
+     *     String referenciaTransacao;
+     *     String status;
+     *     String comprovativoPath;
+     * 
+     * 5.8 - NotificacaoModelo
+     *     int id;
+     *     String clienteId;
+     *     String areaId;
+     *     String titulo;
+     *     String mensagem;
+     *     String tipo;
+     *     Date dataEnvio;
+     *     boolean lida;
+     * 
+     * 5.9 - SolicitacaoModelo
+     *     int id;
+     *     String clienteId;
+     *     String tipoSolicitacao;
+     *     String descricao;
+     *     String prioridade;
+     *     Date dataAbertura;
+     *     String status;
+     *     String tecnicoResponsavel;
+     * 
+     * 5.10 - CorteEnergiaModelo
+     *     int id;
+     *     String clienteId;
+     *     String areaId;
+     *     String motivo;
+     *     Date dataInicio;
+     *     Date dataFim;
+     *     String status;
+     * 
+     * 6. PERSISTÊNCIA DE DADOS
+     * 
+     * 6.1 - Tabelas de Apoio / Auxiliares (.tab)
+     *     Provincias.tab
+     *     Municipios.tab
+     *     Comunas.tab
+     *     Bairros.tab
+     *     TiposCliente.tab
+     *     TiposContador.tab
+     *     TiposTarifa.tab
+     *     MetodosPagamento.tab
+     *     TiposNotificacao.tab
+     *     TiposSolicitacao.tab
+     *     Prioridades.tab
+     *     StatusFactura.tab
+     * 
+     * 6.2 - Ficheiros de Dados (.DAT)
+     *     Pessoas.DAT
+     *     Perfis.DAT
+     *     Usuarios.DAT
+     *     Menus.DAT
+     *     PerfilMenus.DAT
+     *     Clientes.DAT
+     *     AreasDistribuicao.DAT
+     *     Contadores.DAT
+     *     LeituraConsumo.DAT
+     *     Tarifas.DAT
+     *     Facturas.DAT
+     *     Pagamentos.DAT
+     *     Notificacoes.DAT
+     *     Solicitacoes.DAT
+     *     CortesEnergia.DAT
+     * 
+     * 7. FLUXO DE LOGIN COM RBAC
+     * 
+     * 1. Usuário informa nomeUsuario e palavraPass na tela LoginVisao
+     * 2. Sistema valida credenciais na tabela Usuario
+     * 3. Sistema verifica se usuário está bloqueado ou inactivo
+     * 4. Sistema obtém o perfilId do usuário
+     * 5. Sistema consulta todos os menus associados ao perfil (tabela PerfilMenu)
+     * 6. Sistema monta estrutura de menus hierárquica (menus pai e filhos)
+     * 7. Sistema gera dinamicamente o MenuPrincipalVisao com base nos menus carregados
+     * 8. Sistema armazena na sessão:
+     *    - Dados do usuário
+     *    - Perfil do usuário
+     *    - Lista de menus permitidos
+     *    - Permissões específicas (CRUD por menu)
+     * 9. Sistema exibe dashboard conforme perfil
+     * 10. Usuário navega apenas pelos menus visíveis ao seu perfil
+     * 
+     * 8. ESTRUTURA DE PERFIS E MENUS
+     * 
+     * 8.1 - Perfis predefinidos
+     *     | ID | NOME        | NÍVEL | DESCRIÇÃO                         |
+     *     |----|-------------|-------|-----------------------------------|
+     *     | 1  | ADMIN       | 10    | Acesso total ao sistema           |
+     *     | 2  | GESTOR      | 8     | Gestão de clientes, facturas      |
+     *     | 3  | CONTABILISTA| 7     | Gestão de facturas e pagamentos   |
+     *     | 4  | TECNICO     | 5     | Leitura contadores, reparações    |
+     *     | 5  | CLIENTE     | 1     | Acesso apenas à área do cliente   |
+     * 
+     * 8.2 - Estrutura de Menus por Perfil
+     * 
+     * ADMIN (Acesso total):
+     * ├── Dashboard
+     * ├── Utilizadores
+     * │   ├── Pessoas
+     * │   ├── Usuários
+     * │   ├── Perfis
+     * │   └── Menus
+     * ├── Clientes
+     * │   ├── Cadastro
+     * │   ├── Consulta
+     * │   └── Edição
+     * ├── Áreas e Contadores
+     * │   ├── Áreas de Distribuição
+     * │   ├── Contadores
+     * │   └── Leituras
+     * ├── Facturação
+     * │   ├── Emitir Factura
+     * │   ├── Registar Pagamento
+     * │   └── Facturas em Atraso (Todos)
+     * ├── Notificações
+     * │   ├── Enviar Notificação
+     * │   └── Histórico
+     * ├── Solicitações
+     * │   ├── Lista de Solicitações
+     * │   └── Atribuir Técnico
+     * ├── Cortes de Energia
+     * │   ├── Programar Corte
+     * │   └── Gestão de Cortes
+     * └── Relatórios
+     *     ├── Consumo
+     *     ├── Financeiro
+     *     └── Inadimplência
+     * 
+     * CLIENTE (Acesso restrito):
+     * ├── Meu Dashboard
+     * ├── Minhas Facturas
+     * │   ├── Facturas Pendentes
+     * │   ├── FACTURAS EM ATRASO (EM TRAÇO)
+     * │   ├── Facturas Pagas
+     * │   └── Detalhe Factura
+     * ├── Pagamentos
+     * │   ├── Efectuar Pagamento
+     * │   ├── Histórico de Pagamentos
+     * │   └── Comprovativos
+     * ├── Consumo
+     * │   ├── Consumo Actual
+     * │   └── Histórico de Consumo
+     * ├── Notificações
+     * │   └── Minhas Notificações
+     * └── Solicitações
+     *     ├── Nova Solicitação
+     *     └── Acompanhar Solicitações
+     * 
+     * TECNICO (Acesso médio):
+     * ├── Dashboard Técnico
+     * ├── Leituras
+     * │   ├── Leituras Pendentes
+     * │   ├── Registrar Leitura
+     * │   └── Histórico de Leituras
+     * ├── Solicitações
+     * │   ├── Minhas Solicitações
+     * │   └── Atualizar Status
+     * ├── Cortes
+     * │   ├── Executar Corte
+     * │   └── Religar Serviço
+     * └── Relatórios
+     *     └── Meus Atendimentos
+     * 
+     * GESTOR (Acesso gerencial):
+     * ├── Dashboard Gerencial
+     * ├── Clientes
+     * │   ├── Cadastro
+     * │   ├── Consulta
+     * │   └── Análise de Crédito
+     * ├── Facturação
+     * │   ├── Emitir Factura
+     * │   ├── Consultar Facturas
+     * │   └── Facturas em Atraso
+     * ├── Pagamentos
+     * │   ├── Confirmar Pagamentos
+     * │   └── Conciliação Bancária
+     * ├── Relatórios
+     * │   ├── Inadimplência
+     * │   ├── Projecção de Receita
+     * │   └── Análise de Consumo
+     * └── Configurações
+     *     └── Tarifas
+     * 
+     * 9. REGRAS DE NEGÓCIO DO RBAC
+     * 
+     * - Um usuário pertence a apenas um perfil
+     * - Um perfil pode ter múltiplos usuários
+     * - Cada perfil tem um nível de acesso (1 a 10)
+     * - Menus de nível superior só aparecem para perfis com nível >= menu.nivelMinimoAcesso
+     * - Permissões CRUD são controladas por perfil (podeVisualizar, podeCriar, podeEditar, podeEliminar)
+     * - Usuário ADMIN (nível 10) tem acesso irrestrito a todos os menus
+     * - Usuário CLIENTE só vê menus relacionados à sua própria conta
+     * - A estrutura de menus é carregada apenas uma vez por sessão
+     * - Alterações em PerfilMenu exigem religamento do usuário para efeito
+     * - Todo acesso a tela verifica permissão do usuário na sessão
+     * - O menu é gerado dinamicamente através de um MenuBuilder baseado no perfil
+     * 
+     * 10. REQUISITOS TÉCNICOS
+     * 
+     * - Java 8 ou superior
+     * - Swing com LookAndFeel Nimbus ou FlatLaf
+     * - Persistência em ficheiros binários (.DAT)
+     * - Sistema de logging para auditoria
+     * - Relatórios em formato PDF e CSV
+     * - Geração de comprovativos de pagamento em PDF
+     * - Integração com APIs de pagamento (simulada)
+     * - Geração de QR Code para pagamentos rápidos
+     * - Validação de dados de entrada
+     * - Criptografia de palavras-passe (SHA-256)
+     * - Criptografia de dados sensíveis (AES)
+     * - Sistema de sessão com timeout automático
+     * - Cache de menus carregados por perfil
+     * 
+     * 11. ESTRUTURA DE PACOTES
+     * 
+     * com.energia/
+     * ├── main/
+     * │   └── SistemaEnergia.java
+     * ├── models/
+     * │   ├── pessoa/
+     * │   │   └── Pessoa.java
+     * │   ├── rbac/
+     * │   │   ├── Perfil.java
+     * │   │   ├── Usuario.java
+     * │   │   ├── Menu.java
+     * │   │   └── PerfilMenu.java
+     * │   ├── cliente/
+     * │   │   └── Cliente.java
+     * │   ├── energia/
+     * │   │   ├── AreaDistribuicao.java
+     * │   │   ├── Contador.java
+     * │   │   ├── LeituraConsumo.java
+     * │   │   ├── Tarifa.java
+     * │   │   └── CorteEnergia.java
+     * │   ├── facturacao/
+     * │   │   ├── Factura.java
+     * │   │   └── Pagamento.java
+     * │   └── comunicacao/
+     * │       ├── Notificacao.java
+     * │       └── Solicitacao.java
+     * ├── views/
+     * │   ├── LoginVisao.java
+     * │   ├── MenuPrincipalVisao.java (GERA MENU DINÂMICO)
+     * │   ├── rbac/
+     * │   │   ├── UsuarioCadastroVisao.java
+     * │   │   ├── UsuarioConsultaVisao.java
+     * │   │   ├── PerfilCadastroVisao.java
+     * │   │   ├── PerfilConsultaVisao.java
+     * │   │   ├── MenuCadastroVisao.java
+     * │   │   ├── MenuConsultaVisao.java
+     * │   │   └── PerfilMenuAtribuicaoVisao.java
+     * │   ├── cliente/
+     * │   │   ├── DashboardClienteVisao.java
+     * │   │   ├── MinhasFacturasVisao.java
+     * │   │   ├── FacturasAtrasoVisao.java
+     * │   │   ├── PagamentoOnlineVisao.java
+     * │   │   └── HistoricoPagamentosVisao.java
+     * │   ├── admin/
+     * │   │   ├── DashboardAdminVisao.java
+     * │   │   ├── ClienteCadastroVisao.java
+     * │   │   ├── FacturaEmissaoVisao.java
+     * │   │   └── RelatorioInadimplenciaVisao.java
+     * │   └── tecnico/
+     * │       ├── DashboardTecnicoVisao.java
+     * │       ├── LeituraRegistoVisao.java
+     * │       └── CorteExecucaoVisao.java
+     * ├── controllers/
+     * │   ├── rbac/
+     * │   │   ├── AuthController.java (GERENCIAMENTO DE SESSÃO)
+     * │   │   ├── UsuarioController.java
+     * │   │   ├── PerfilController.java
+     * │   │   └── MenuController.java
+     * │   ├── cliente/
+     * │   │   └── ClienteController.java
+     * │   └── facturacao/
+     * │       ├── FacturaController.java
+     * │       └── PagamentoController.java
+     * ├── dao/
+     * │   ├── rbac/
+     * │   │   ├── UsuarioDAO.java
+     * │   │   ├── PerfilDAO.java
+     * │   │   ├── MenuDAO.java
+     * │   │   └── PerfilMenuDAO.java
+     * │   └── ...
+     * ├── services/
+     * │   ├── rbac/
+     * │   │   ├── MenuBuilderService.java (CONSTRÓI MENU DINÂMICO)
+     * │   │   ├── PermissaoService.java (VERIFICA PERMISSÕES)
+     * │   │   └── SessionService.java (GERENCIA SESSÃO)
+     * │   └── ...
+     * ├── utils/
+     * │   ├── DatabaseUtil.java
+     * │   ├── CryptoUtil.java
+     * │   ├── PDFGeneratorUtil.java
+     * │   └── SessionUtil.java
+     * ├── enums/
+     * │   ├── PerfilEnum.java
+     * │   ├── StatusFacturaEnum.java
+     * │   ├── MetodoPagamentoEnum.java
+     * │   └── ...
+     * └── session/
+     *     └── SessaoUsuario.java (OBJETO DE SESSÃO)
+     * 
+     * 12. EXEMPLO DE GERAÇÃO DE MENU DINÂMICO
+     * 
+     * public class MenuBuilderService {
+     *     
+     *     public JMenuBar construirMenuBar(SessaoUsuario sessao) {
+     *         JMenuBar menuBar = new JMenuBar();
+     *         
+     *         // Buscar menus raiz (menuPaiId = null) para o perfil do usuário
+     *         List<Menu> menusRaiz = menuDAO.findMenusByPerfil(sessao.getPerfilId());
+     *         
+     *         for (Menu menuRaiz : menusRaiz) {
+     *             JMenu menu = new JMenu(menuRaiz.getNome());
+     *             
+     *             // Buscar submenus
+     *             List<Menu> submenus = menuDAO.findSubmenus(menuRaiz.getId(), sessao.getPerfilId());
+     *             
+     *             for (Menu submenu : submenus) {
+     *                 JMenuItem menuItem = new JMenuItem(submenu.getNome());
+     *                 menuItem.setIcon(new ImageIcon(submenu.getIcone()));
+     *                 
+     *                 // Ao clicar, abre a view correspondente
+     *                 menuItem.addActionListener(e -> {
+     *                     abrirView(submenu.getCaminhoClasse());
+     *                 });
+     *                 
+     *                 menu.add(menuItem);
+     *             }
+     *             
+     *             if (submenus.size() > 0) {
+     *                 menuBar.add(menu);
+     *             }
+     *         }
+     *         
+     *         return menuBar;
+     *     }
+     *     
+     *     private void abrirView(String caminhoClasse) {
+     *         try {
+     *             Class<?> classe = Class.forName(caminhoClasse);
+     *             JFrame frame = (JFrame) classe.getDeclaredConstructor().newInstance();
+     *             frame.setVisible(true);
+     *         } catch (Exception ex) {
+     *             // Tratar exceção
+     *         }
+     *     }
+     * }
+     * 
+     * 13. DIAGRAMA DE RELACIONAMENTO RBAC
+     * 
+     *                    ┌─────────────┐
+     *                    │   Pessoa    │
+     *                    │─────────────│
+     *                    │ id (PK)     │
+     *                    │ nomeCompleto│
+     *                    │ numeroBI    │
+     *                    │ ...         │
+     *                    └──────┬──────┘
+     *                           │ 1
+     *                           │
+     *                           │ * (1 pessoa pode ter 1 usuário)
+     *                    ┌──────▼──────┐     ┌─────────────┐
+     *                    │   Usuario   │     │   Perfil    │
+     *                    │─────────────│     │─────────────│
+     *                    │ id (PK)     │  *  │ id (PK)     │
+     *                    │ pessoaId(FK)├────►│ nome        │
+     *                    │ perfilId(FK)│     │ nivelAcesso │
+     *                    │ nomeUsuario │     └─────────────┘
+     *                    │ palavraPass │            │
+     *                    └─────────────┘            │
+     *                                               │ *
+     *                                               │
+     *                                    ┌──────────▼──────────┐
+     *                                    │     PerfilMenu      │
+     *                                    │─────────────────────│
+     *                                    │ id (PK)             │
+     *                                    │ perfilId (FK)       │
+     *                                    │ menuId (FK)         │
+     *                                    │ podeVisualizar      │
+     *                                    │ podeCriar           │
+     *                                    │ podeEditar          │
+     *                                    │ podeEliminar        │
+     *                                    └──────────┬──────────┘
+     *                                               │ *
+     *                                               │
+     *                                    ┌──────────▼──────────┐
+     *                                    │       Menu          │
+     *                                    │─────────────────────│
+     *                                    │ id (PK)             │
+     *                                    │ menuPaiId (FK)      │
+     *                                    │ nome                │
+     *                                    │ caminhoClasse       │
+     *                                    │ ordem               │
+     *                                    └─────────────────────┘
+     * 
+     */
+    
+}
