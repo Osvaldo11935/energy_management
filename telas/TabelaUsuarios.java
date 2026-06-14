@@ -7,46 +7,74 @@ import modeloFiles.UsuarioFile;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.List;
 
 public class TabelaUsuarios extends JFrame {
 
-    private final UsuarioFile usuarioFile = new UsuarioFile(new UsuarioModelo());
-    private final PessoaFile pessoaFile = new PessoaFile(new PessoaModelo());
+    private final UsuarioFile usuarioFile =
+            new UsuarioFile(new UsuarioModelo());
 
-    private final List<UsuarioModelo> usuarios;
+    private final PessoaFile pessoaFile =
+            new PessoaFile(new PessoaModelo());
+
+    private List<UsuarioModelo> usuarios;
+
+    private JPanel painelTabela;
 
     public TabelaUsuarios() {
 
         setTitle("Usuários");
         setSize(700, 400);
         setLocationRelativeTo(null);
-        //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        usuarios = usuarioFile.listar(); 
+        carregarTabela();
+    }
 
-        String[] colunas = {"ID", "Nome", "Email", "Telefone"};
+    private void carregarTabela() {
 
-        List<Object[]> dados = usuarios.stream()
-                .map(u -> new Object[]{
-                        u.getId(),
-                        u.getNomeUsuario(),
-                        u.getEmail(),
-                        u.getNumeroTelefone()
-                })
-                .toList();
+        usuarios = usuarioFile.listar();
 
-        List<TabelaGerador.AcaoTabela> acoes = criarAcoes();
+        String[] colunas = {
+                "ID",
+                "Nome",
+                "Email",
+                "Telefone",
+                "Perfil"
+        };
 
-        JPanel tabela = TabelaGerador.criarTabelaComAcoes(
-                colunas,
-                dados,
-                acoes,
-                "Novo",
-                this::abrirNovoUsuario
-        );
+        List<Object[]> dados =
+                usuarios.stream()
+                        .map(u -> new Object[]{
+                                u.getId(),
+                                u.getNomeUsuario(),
+                                u.getEmail(),
+                                u.getNumeroTelefone(),
+                                u.getPerfil().getNome()
+                        })
+                        .toList();
 
-        add(tabela, BorderLayout.CENTER);
+        JPanel novaTabela =
+                TabelaGerador.criarTabelaComAcoes(
+                        colunas,
+                        dados,
+                        criarAcoes(),
+                        "Novo",
+                        this::abrirNovoUsuario
+                );
+
+        if (painelTabela != null) {
+            remove(painelTabela);
+        }
+
+        painelTabela = novaTabela;
+
+        add(painelTabela, BorderLayout.CENTER);
+
+        revalidate();
+        repaint();
     }
 
     private List<TabelaGerador.AcaoTabela> criarAcoes() {
@@ -54,105 +82,217 @@ public class TabelaUsuarios extends JFrame {
         return List.of(
 
                 new TabelaGerador.AcaoTabela() {
+
+                    @Override
                     public String getNome() {
                         return "Editar";
                     }
 
-                    public void executar(int linha, Object[] dadosLinha) {
-                        UsuarioModelo usuario = buscarUsuario(dadosLinha);
-                        SwingUtilities.invokeLater(() ->
-                                 new FormWindow("Atualizar Usuario", 456, 387, new FormCadastroUsuario(usuario)).setVisible(true)
+                    @Override
+                    public void executar(
+                            int linha,
+                            Object[] dadosLinha
+                    ) {
+
+                        UsuarioModelo usuario =
+                                buscarUsuario(dadosLinha);
+
+                        FormWindow tela =
+                                new FormWindow(
+                                        "Atualizar Usuário",
+                                        456,
+                                        387,
+                                        new FormUsuario(usuario)
+                                );
+
+                        tela.addWindowListener(
+                                new WindowAdapter() {
+
+                                    @Override
+                                    public void windowClosed(
+                                            WindowEvent e
+                                    ) {
+                                        carregarTabela();
+                                    }
+                                }
                         );
+
+                        tela.setVisible(true);
                     }
                 },
 
                 new TabelaGerador.AcaoTabela() {
+
+                    @Override
                     public String getNome() {
                         return "Remover";
                     }
 
-                    public void executar(int linha, Object[] dadosLinha) {
+                    @Override
+                    public void executar(
+                            int linha,
+                            Object[] dadosLinha
+                    ) {
 
-                        int confirm = JOptionPane.showConfirmDialog(
-                                null,
-                                "Remover " + dadosLinha[1] + "?"
-                        );
+                        int confirm =
+                                JOptionPane.showConfirmDialog(
+                                        TabelaUsuarios.this,
+                                        "Remover "
+                                                + dadosLinha[1]
+                                                + "?",
+                                        "Confirmação",
+                                        JOptionPane.YES_NO_OPTION
+                                );
 
-                        if (confirm == JOptionPane.YES_OPTION) {
-                            JOptionPane.showMessageDialog(null, "Removido!");
+                        if (confirm
+                                == JOptionPane.YES_OPTION) {
+
+                            int id =
+                                    getId(dadosLinha);
+
+                            usuarioFile.remover(id);
+
+                            carregarTabela();
+
+                            JOptionPane.showMessageDialog(
+                                    TabelaUsuarios.this,
+                                    "Removido!"
+                            );
                         }
                     }
                 },
 
                 new TabelaGerador.AcaoTabela() {
+
+                    @Override
                     public String getNome() {
                         return "Adicionar Dados Pessoais";
                     }
 
-                    public void executar(int linha, Object[] dadosLinha) {
+                    @Override
+                    public void executar(
+                            int linha,
+                            Object[] dadosLinha
+                    ) {
 
-                        int id = getId(dadosLinha);
+                        int id =
+                                getId(dadosLinha);
 
-                        PessoaModelo pessoa = pessoaFile.buscarPorUsuarioId(id);
+                        PessoaModelo pessoa =
+                                pessoaFile
+                                        .buscarPorUsuarioId(id);
 
                         if (pessoa != null) {
-                            JOptionPane.showMessageDialog(null,
-                                    "Usuário já tem dados pessoais cadastrados");
+
+                            JOptionPane.showMessageDialog(
+                                    TabelaUsuarios.this,
+                                    "Usuário já tem dados pessoais cadastrados"
+                            );
+
                             return;
                         }
 
-                        SwingUtilities.invokeLater(() ->
-                                new FormWindow("Dados Pessoais",456, 600, new FormCadastroPessoa(() -> String.valueOf(id))).setVisible(true)
+                        FormWindow tela =
+                                new FormWindow(
+                                        "Dados Pessoais",
+                                        456,
+                                        510,
+                                        new FormPessoa(
+                                                () -> String.valueOf(id)
+                                        )
+                                );
+
+                        tela.addWindowListener(
+                                new WindowAdapter() {
+
+                                    @Override
+                                    public void windowClosed(
+                                            WindowEvent e
+                                    ) {
+                                        carregarTabela();
+                                    }
+                                }
                         );
+
+                        tela.setVisible(true);
                     }
                 },
 
                 new TabelaGerador.AcaoTabela() {
+
+                    @Override
                     public String getNome() {
                         return "Detalhe";
                     }
 
-                    public void executar(int linha, Object[] dadosLinha) {
+                    @Override
+                    public void executar(
+                            int linha,
+                            Object[] dadosLinha
+                    ) {
 
-                        int id = getId(dadosLinha);
+                        int id =
+                                getId(dadosLinha);
 
-                        PessoaModelo pessoa = pessoaFile.buscarPorUsuarioId(id);
+                        PessoaModelo pessoa =
+                                pessoaFile
+                                        .buscarPorUsuarioId(id);
 
                         if (pessoa == null) {
-                            JOptionPane.showMessageDialog(null,
-                                    "Usuário sem dados pessoais. Cadastre primeiro.");
+
+                            JOptionPane.showMessageDialog(
+                                    TabelaUsuarios.this,
+                                    "Usuário sem dados pessoais. Cadastre primeiro."
+                            );
+
                             return;
                         }
 
-                        SwingUtilities.invokeLater(() ->
-                                new TabelaPessoa(() -> String.valueOf(id)).setVisible(true)
-                        );
+                        SwingUtilities.invokeLater(() ->new DetalhePessoa(() -> String.valueOf(id)).setVisible(true));
                     }
                 }
         );
     }
 
     private UsuarioModelo buscarUsuario(Object[] dadosLinha) {
+
         int id = getId(dadosLinha);
+
         return usuarios.stream()
                 .filter(u -> u.getId() == id)
                 .findFirst()
                 .orElse(null);
     }
 
-    private int getId(Object[] dadosLinha) {
-        return Integer.parseInt(dadosLinha[0].toString());
-    }
+    private int getId(
+            Object[] dadosLinha
+    ) {
 
-    private void abrirNovoUsuario() {
-        SwingUtilities.invokeLater(() ->
-                new FormWizard().setVisible(true)
+        return Integer.parseInt(
+                dadosLinha[0].toString()
         );
     }
 
+    private void abrirNovoUsuario() {
+        FormWizard tela = new FormWizard();
+        tela.addWindowListener(
+                new WindowAdapter() {
+                    @Override
+                    public void windowClosed( WindowEvent e) {
+                        carregarTabela();
+                    }
+                }
+        );
+
+        tela.setVisible(true);
+    }
+
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() ->
-                new TabelaUsuarios().setVisible(true)
+
+        SwingUtilities.invokeLater(
+                () ->
+                        new TabelaUsuarios()
+                                .setVisible(true)
         );
     }
 }

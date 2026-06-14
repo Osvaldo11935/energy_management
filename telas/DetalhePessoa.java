@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class TabelaPessoa extends JFrame {
+public class DetalhePessoa extends JFrame {
     private Supplier<String> idUsuarioProvider;
     private JPanel painelDetalhe;
     private JPanel painelConteudo;
@@ -18,20 +18,17 @@ public class TabelaPessoa extends JFrame {
     private boolean documentosExpandido = false;
     private boolean enderecoExpandido = false;
     
-    public TabelaPessoa(Supplier<String> idUsuarioProvider) {
+    public DetalhePessoa(Supplier<String> idUsuarioProvider) {
 
         this.idUsuarioProvider = idUsuarioProvider;
 
         setTitle("Detalhes da Pessoa");
         setSize(550, 500);
         setLocationRelativeTo(null);
-        //setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        
-        // Criar painel principal com padding
+
         JPanel painelPrincipal = new JPanel(new BorderLayout(10, 10));
         painelPrincipal.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
-        // Criar painel de detalhe com GridBagLayout para melhor organização
         painelDetalhe = new JPanel(new BorderLayout());
         painelConteudo = new JPanel();
         painelConteudo.setLayout(new BoxLayout(painelConteudo, BoxLayout.Y_AXIS));
@@ -44,10 +41,8 @@ public class TabelaPessoa extends JFrame {
         
         painelDetalhe.add(scrollPane, BorderLayout.CENTER);
         
-        // Carregar e exibir os dados
         carregarDetalhes();
         
-        // Botão para voltar/editar
         JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         
         JButton btnEditar = criarBotao("Editar", new Color(52, 152, 219));
@@ -88,7 +83,6 @@ public class TabelaPessoa extends JFrame {
                 return;
             }
             
-            // Título principal
             JLabel tituloPrincipal = new JLabel("INFORMAÇÕES PESSOAIS");
             tituloPrincipal.setFont(new Font("Arial", Font.BOLD, 20));
             tituloPrincipal.setForeground(new Color(41, 128, 185));
@@ -96,8 +90,7 @@ public class TabelaPessoa extends JFrame {
             tituloPrincipal.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
             painelConteudo.add(tituloPrincipal);
             
-            // Seção 1: Dados Pessoais
-            adicionarSecao("📋 DADOS PESSOAIS", dadosPessoaisExpandido, () -> {
+            adicionarSecao("DADOS PESSOAIS", dadosPessoaisExpandido, () -> {
                 JPanel painel = criarPainelGrid();
                 adicionarCampo(painel, "ID:", String.valueOf(pessoa.getId()), criarIcone("id"));
                 adicionarCampo(painel, "Nº do BI:", pessoa.getNumeroBI(), criarIcone("bi"));
@@ -110,31 +103,26 @@ public class TabelaPessoa extends JFrame {
                 return painel;
             });
             
-            // Seção 2: Filiação
-            adicionarSecao("👨‍👩‍👧 FILIAÇÃO", filiacaoExpandido, () -> {
+            adicionarSecao("FILIAÇÃO", filiacaoExpandido, () -> {
                 JPanel painel = criarPainelGrid();
                 adicionarCampo(painel, "Nome do Pai:", pessoa.getNomePai(), criarIcone("pai"));
                 adicionarCampo(painel, "Nome da Mãe:", pessoa.getNomeMae(), criarIcone("mae"));
                 return painel;
             });
             
-            // Seção 3: Documentação
-            adicionarSecao("📄 DOCUMENTAÇÃO", documentosExpandido, () -> {
+            adicionarSecao("DOCUMENTAÇÃO", documentosExpandido, () -> {
                 JPanel painel = criarPainelGrid();
                 adicionarCampo(painel, "Documento Emitido Em:", pessoa.getDocumentoEmitidoEm(), criarIcone("data"));
                 adicionarCampo(painel, "Documento Válido Até:", pessoa.getDocumentoValidoAte(), criarIcone("data"));
                 return painel;
             });
             
-            // Seção 4: Endereço
-            adicionarSecao("🏠 ENDEREÇO", enderecoExpandido, () -> {
+            adicionarSecao("ENDEREÇO", enderecoExpandido, () -> {
                 JPanel painel = criarPainelGrid();
                 adicionarCampo(painel, "Endereço Residencial:", pessoa.getResidencia(), criarIcone("endereco"));
-                adicionarCampo(painel, "ID do Usuário:", String.valueOf(pessoa.getUsuarioId()), criarIcone("usuario"));
                 return painel;
             });
             
-            // Adicionar espaço extra no final
             painelConteudo.add(Box.createVerticalStrut(20));
             
         } catch (NumberFormatException e) {
@@ -148,7 +136,6 @@ public class TabelaPessoa extends JFrame {
     }
     
     private void adicionarSecao(String titulo, boolean expandido, SecaoConteudoProvider provider) {
-        // Painel da seção
         JPanel secaoPainel = new JPanel();
         secaoPainel.setLayout(new BoxLayout(secaoPainel, BoxLayout.Y_AXIS));
         secaoPainel.setBackground(Color.WHITE);
@@ -157,7 +144,6 @@ public class TabelaPessoa extends JFrame {
             BorderFactory.createEmptyBorder(10, 10, 10, 10)
         ));
         
-        // Botão do cabeçalho
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(Color.WHITE);
         headerPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -173,7 +159,6 @@ public class TabelaPessoa extends JFrame {
         headerPanel.add(tituloLabel, BorderLayout.WEST);
         headerPanel.add(iconeLabel, BorderLayout.EAST);
         
-        // Adicionar mouse listener para expandir/recolher
         headerPanel.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent e) {
@@ -195,7 +180,6 @@ public class TabelaPessoa extends JFrame {
         
         secaoPainel.add(headerPanel);
         
-        // Conteúdo da seção
         if (expandido) {
             JPanel conteudoPanel = provider.getConteudo();
             conteudoPanel.setBorder(BorderFactory.createEmptyBorder(15, 20, 10, 20));
@@ -218,16 +202,13 @@ public class TabelaPessoa extends JFrame {
             enderecoExpandido = !enderecoExpandido;
         }
         
-        // Remover o conteúdo atual
         if (secaoPainel.getComponentCount() > 1) {
             secaoPainel.remove(1);
         }
         
-        // Atualizar ícone
         boolean expandido = iconeLabel.getText().equals("▼");
         iconeLabel.setText(expandido ? "▶" : "▼");
         
-        // Adicionar novo conteúdo se expandido
         if (!expandido) {
             JPanel conteudoPanel = provider.getConteudo();
             conteudoPanel.setBorder(BorderFactory.createEmptyBorder(15, 20, 10, 20));
@@ -237,7 +218,6 @@ public class TabelaPessoa extends JFrame {
         secaoPainel.revalidate();
         secaoPainel.repaint();
         
-        // Ajustar tamanho da janela
         pack();
         setLocationRelativeTo(null);
     }
@@ -253,7 +233,6 @@ public class TabelaPessoa extends JFrame {
         gbc.insets = new Insets(8, 5, 8, 5);
         gbc.anchor = GridBagConstraints.WEST;
         
-        // Label
         JLabel lblLabel = new JLabel(label, icone, JLabel.LEADING);
         lblLabel.setFont(new Font("Arial", Font.BOLD, 13));
         lblLabel.setForeground(new Color(85, 85, 85));
@@ -263,7 +242,6 @@ public class TabelaPessoa extends JFrame {
         gbc.weightx = 0.35;
         painel.add(lblLabel, gbc);
         
-        // Valor
         JLabel lblValor = new JLabel(valor != null && !valor.isEmpty() ? valor : "—");
         lblValor.setFont(new Font("Arial", Font.PLAIN, 13));
         lblValor.setForeground(new Color(51, 51, 51));
@@ -371,7 +349,7 @@ public class TabelaPessoa extends JFrame {
         String idUsuario = idUsuarioProvider.get();
         if (idUsuario != null && !idUsuario.isEmpty()) {
             JFrame frame = new JFrame();
-            frame.add(new FormCadastroPessoa(() -> idUsuario));
+            frame.add(new FormPessoa(() -> idUsuario));
             frame.setSize(400, 500);
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
@@ -385,8 +363,6 @@ public class TabelaPessoa extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            new TabelaPessoa(() -> "1").setVisible(true);
-        });
+        SwingUtilities.invokeLater(() -> {new DetalhePessoa(() -> "1").setVisible(true);});
     }
 }

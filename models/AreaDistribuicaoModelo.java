@@ -4,10 +4,12 @@ import anotacoes.CampoFormulario;
 import anotacoes.TipoCampo;
 import modeloFiles.AreaDistribuicaoFile;
 import modeloFiles.ClienteFile;
+import modeloFiles.SubestacaoFile;
 import models.common.BaseModelo;
 import models.common.ModeloUtil;
 import java.io.*;
 import SwingComponents.*;
+import SwingComponentsSrc.StringBufferModelo;
 import provedores.AreaDistribuicaoProvedor;
 import provedores.MunicipioProvedor;
 import provedores.ProvinciaProvedor;
@@ -64,6 +66,9 @@ public class AreaDistribuicaoModelo extends BaseModelo {
         provider = AreaDistribuicaoProvedor.class
     )
     private int subestacaoId;
+
+    private SubestacaoModelo subestacao;
+
     public AreaDistribuicaoModelo()
     {
         super();
@@ -105,7 +110,10 @@ public class AreaDistribuicaoModelo extends BaseModelo {
     public int getSubestacaoId() {
         return subestacaoId;
     }
-
+    public SubestacaoModelo getSubestacao()
+    {
+        return new SubestacaoFile(new SubestacaoModelo()).obterPorId(getSubestacaoId());
+    }
     public void setProvincia(String provincia) {
         this.provincia = new StringBufferModelo(provincia, 30);
     }

@@ -9,9 +9,9 @@ import modeloFiles.PessoaFile;
 import models.PessoaModelo;
 
 
-public class FormCadastroPessoa extends JPanel {
+public class FormPessoa extends JPanel {
     private Supplier<String> idUsuarioProvider;
-    public FormCadastroPessoa(Supplier<String> idUsuarioProvider) {
+    public FormPessoa(Supplier<String> idUsuarioProvider) {
         this.idUsuarioProvider = idUsuarioProvider;
         setLayout(new BorderLayout());
 
@@ -50,6 +50,6 @@ public class FormCadastroPessoa extends JPanel {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new FormCadastroPessoa(() -> "").setVisible(true));
+        SwingUtilities.invokeLater(() -> new FormPessoa(() -> "").setVisible(true));
     }
 }

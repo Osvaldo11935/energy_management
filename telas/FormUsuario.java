@@ -7,9 +7,9 @@ import javax.swing.*;
 import modeloFiles.UsuarioFile;
 import models.UsuarioModelo;
 
-public class FormCadastroUsuario extends JPanel {
+public class FormUsuario extends JPanel {
     private String idGerado;
-    public FormCadastroUsuario(Consumer<String> aoSalvarCallback) {
+    public FormUsuario(Consumer<String> aoSalvarCallback) {
 
         setLayout(new BorderLayout());
 
@@ -44,7 +44,7 @@ public class FormCadastroUsuario extends JPanel {
         add(form, BorderLayout.CENTER);
     }
 
-    public FormCadastroUsuario(UsuarioModelo dadosUsuario) {
+    public FormUsuario(UsuarioModelo dadosUsuario) {
 
         setLayout(new BorderLayout());
 
@@ -69,6 +69,6 @@ public class FormCadastroUsuario extends JPanel {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new FormCadastroUsuario(id->{}).setVisible(true));
+        SwingUtilities.invokeLater(() -> new FormUsuario(id->{}).setVisible(true));
     }
 }

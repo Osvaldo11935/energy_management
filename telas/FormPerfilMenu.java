@@ -6,8 +6,8 @@ import javax.swing.*;
 import modeloFiles.PerfilMenuFile;
 import models.PerfilMenuModelo;
 
-public class FormCadastroPerfilMenu extends JPanel{
-   public FormCadastroPerfilMenu() {
+public class FormPerfilMenu extends JPanel{
+   public FormPerfilMenu() {
 
         setLayout(new BorderLayout());
 
@@ -36,7 +36,7 @@ public class FormCadastroPerfilMenu extends JPanel{
         add(form, BorderLayout.CENTER);
     }
 
-    public FormCadastroPerfilMenu(PerfilMenuModelo dadosPerfilMenu) {
+    public FormPerfilMenu(PerfilMenuModelo dadosPerfilMenu) {
 
         setLayout(new BorderLayout());
 
@@ -62,6 +62,6 @@ public class FormCadastroPerfilMenu extends JPanel{
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new FormCadastroPerfilMenu().setVisible(true));
+        SwingUtilities.invokeLater(() -> new FormPerfilMenu().setVisible(true));
     }
 }

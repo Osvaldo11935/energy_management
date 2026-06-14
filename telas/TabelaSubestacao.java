@@ -1,29 +1,48 @@
 package telas;
 
 import java.awt.BorderLayout;
-import java.util.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.List;
+
 import javax.swing.*;
+
 import modeloFiles.SubestacaoFile;
 import models.SubestacaoModelo;
 
-public class TabelaSubestacao  extends  JFrame {
+public class TabelaSubestacao extends JFrame {
 
-    private final SubestacaoFile SubestacaoFile = new SubestacaoFile(new SubestacaoModelo());
+    private final SubestacaoFile subestacaoFile =
+            new SubestacaoFile(new SubestacaoModelo());
 
-    private final List<SubestacaoModelo> Subestacao;
+    private List<SubestacaoModelo> subestacao;
+
+    private JPanel painelTabela;
 
     public TabelaSubestacao() {
 
-        setTitle("Subestacaos");
+        setTitle("Subestações");
         setSize(700, 400);
         setLocationRelativeTo(null);
-        //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        Subestacao = SubestacaoFile.listar(); 
+        carregarTabela();
+    }
 
-        String[] colunas = {"ID", "Codigo", "Nome", "Capacidade", "Tensão Nominal", "Responsavel"};
+    private void carregarTabela() {
 
-        List<Object[]> dados = Subestacao.stream()
+        subestacao = subestacaoFile.listar();
+
+        String[] colunas = {
+                "ID",
+                "Codigo",
+                "Nome",
+                "Capacidade",
+                "Tensão Nominal",
+                "Responsavel"
+        };
+
+        List<Object[]> dados = subestacao.stream()
                 .map(u -> new Object[]{
                         u.getId(),
                         u.getCodigo(),
@@ -34,17 +53,25 @@ public class TabelaSubestacao  extends  JFrame {
                 })
                 .toList();
 
-        List<TabelaGerador.AcaoTabela> acoes = criarAcoes();
+        JPanel novaTabela =
+                TabelaGerador.criarTabelaComAcoes(
+                        colunas,
+                        dados,
+                        criarAcoes(),
+                        "Novo",
+                        this::abrirNovoSubestacao
+                );
 
-        JPanel tabela = TabelaGerador.criarTabelaComAcoes(
-                colunas,
-                dados,
-                acoes,
-                "Novo",
-                this::abrirNovoSubestacao
-        );
+        if (painelTabela != null) {
+            remove(painelTabela);
+        }
 
-        add(tabela, BorderLayout.CENTER);
+        painelTabela = novaTabela;
+
+        add(painelTabela, BorderLayout.CENTER);
+
+        revalidate();
+        repaint();
     }
 
     private List<TabelaGerador.AcaoTabela> criarAcoes() {
@@ -52,59 +79,144 @@ public class TabelaSubestacao  extends  JFrame {
         return List.of(
 
                 new TabelaGerador.AcaoTabela() {
+
+                    @Override
                     public String getNome() {
                         return "Editar";
                     }
 
-                    public void executar(int linha, Object[] dadosLinha) {
-                        SubestacaoModelo Subestacao = buscarSubestacao(dadosLinha);
-                        SwingUtilities.invokeLater(() ->
-                                 new FormWindow("Atualizar Subestacao", 456, 628, new FormSubestacao(Subestacao)).setVisible(true)
+                    @Override
+                    public void executar(
+                            int linha,
+                            Object[] dadosLinha
+                    ) {
+
+                        SubestacaoModelo subestacao =
+                                buscarSubestacao(dadosLinha);
+
+                        FormWindow tela =
+                                new FormWindow(
+                                        "Atualizar Subestação",
+                                        456,
+                                        628,
+                                        new FormSubestacao(subestacao)
+                                );
+
+                        tela.addWindowListener(
+                                new WindowAdapter() {
+
+                                    @Override
+                                    public void windowClosed(
+                                            WindowEvent e
+                                    ) {
+                                        carregarTabela();
+                                    }
+                                }
                         );
+
+                        tela.setVisible(true);
                     }
                 },
 
                 new TabelaGerador.AcaoTabela() {
+
+                    @Override
                     public String getNome() {
                         return "Remover";
                     }
 
-                    public void executar(int linha, Object[] dadosLinha) {
+                    @Override
+                    public void executar(
+                            int linha,
+                            Object[] dadosLinha
+                    ) {
 
-                        int confirm = JOptionPane.showConfirmDialog(
-                                null,
-                                "Remover " + dadosLinha[1] + "?"
-                        );
+                        int confirm =
+                                JOptionPane.showConfirmDialog(
+                                        TabelaSubestacao.this,
+                                        "Remover "
+                                                + dadosLinha[1]
+                                                + "?",
+                                        "Confirmação",
+                                        JOptionPane.YES_NO_OPTION
+                                );
 
-                        if (confirm == JOptionPane.YES_OPTION) {
-                            JOptionPane.showMessageDialog(null, "Removido!");
+                        if (confirm
+                                == JOptionPane.YES_OPTION) {
+
+                            int id =
+                                    getId(dadosLinha);
+
+                            subestacaoFile.remover(id);
+
+                            carregarTabela();
+
+                            JOptionPane.showMessageDialog(
+                                    TabelaSubestacao.this,
+                                    "Removido com sucesso!"
+                            );
                         }
                     }
                 }
-            );
+        );
     }
 
-    private SubestacaoModelo buscarSubestacao(Object[] dadosLinha) {
+    private SubestacaoModelo buscarSubestacao(
+            Object[] dadosLinha
+    ) {
+
         int id = getId(dadosLinha);
-        return Subestacao.stream()
-                .filter(u -> u.getId() == id)
+
+        return subestacao.stream()
+                .filter(
+                        u -> u.getId() == id
+                )
                 .findFirst()
                 .orElse(null);
     }
 
-    private int getId(Object[] dadosLinha) {
-        return Integer.parseInt(dadosLinha[0].toString());
-    }
+    private int getId(
+            Object[] dadosLinha
+    ) {
 
-    private void abrirNovoSubestacao() {
-        SwingUtilities.invokeLater(() ->
-                new FormWindow("Novo Subestacao", 456, 628, new FormSubestacao()).setVisible(true)
+        return Integer.parseInt(
+                dadosLinha[0].toString()
         );
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() ->
-                new TabelaSubestacao().setVisible(true)
+    private void abrirNovoSubestacao() {
+
+        FormWindow tela =
+                new FormWindow(
+                        "Nova Subestação",
+                        456,
+                        628,
+                        new FormSubestacao()
+                );
+
+        tela.addWindowListener(
+                new WindowAdapter() {
+
+                    @Override
+                    public void windowClosed(
+                            WindowEvent e
+                    ) {
+                        carregarTabela();
+                    }
+                }
+        );
+
+        tela.setVisible(true);
+    }
+
+    public static void main(
+            String[] args
+    ) {
+
+        SwingUtilities.invokeLater(
+                () ->
+                        new TabelaSubestacao()
+                                .setVisible(true)
         );
     }
 }

@@ -1,50 +1,79 @@
 package telas;
 
 import java.awt.BorderLayout;
-import java.util.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.List;
+
 import javax.swing.*;
+
 import modeloFiles.AreaDistribuicaoFile;
 import models.AreaDistribuicaoModelo;
 
-public class TabelaAreaDistribuicao  extends  JFrame {
+public class TabelaAreaDistribuicao extends JFrame {
 
-    private final AreaDistribuicaoFile areaDistribuicaoFile = new AreaDistribuicaoFile(new AreaDistribuicaoModelo());
+    private final AreaDistribuicaoFile areaDistribuicaoFile =
+            new AreaDistribuicaoFile(new AreaDistribuicaoModelo());
 
-    private final List<AreaDistribuicaoModelo> areaDistribuicao;
+    private List<AreaDistribuicaoModelo> areaDistribuicao;
+
+    private JPanel painelTabela;
 
     public TabelaAreaDistribuicao() {
 
-        setTitle("Area de Distribuições");
+        setTitle("Área de Distribuições");
         setSize(700, 400);
         setLocationRelativeTo(null);
-        //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        areaDistribuicao = areaDistribuicaoFile.listar(); 
+        carregarTabela();
+    }
 
-        String[] colunas = {"ID", "Provincia", "Municipio", "Comuna", "Bairro", "Subestação"};
+    private void carregarTabela() {
 
-        List<Object[]> dados = areaDistribuicao.stream()
-                .map(u -> new Object[]{
-                        u.getId(),
-                        u.getProvincia(),
-                        u.getMunicipio(),
-                        u.getComuna(),
-                        u.getBairro(),
-                        u.getSubestacaoId()
-                })
-                .toList();
+        areaDistribuicao =
+                areaDistribuicaoFile.listar();
 
-        List<TabelaGerador.AcaoTabela> acoes = criarAcoes();
+        String[] colunas = {
+                "ID",
+                "Provincia",
+                "Municipio",
+                "Comuna",
+                "Bairro",
+                "Subestação"
+        };
 
-        JPanel tabela = TabelaGerador.criarTabelaComAcoes(
-                colunas,
-                dados,
-                acoes,
-                "Novo",
-                this::abrirNovoAreaDistribuicao
-        );
+        List<Object[]> dados =
+                areaDistribuicao.stream()
+                        .map(u -> new Object[]{
+                                u.getId(),
+                                u.getProvincia(),
+                                u.getMunicipio(),
+                                u.getComuna(),
+                                u.getBairro(),
+                                u.getSubestacaoId()
+                        })
+                        .toList();
 
-        add(tabela, BorderLayout.CENTER);
+        JPanel novaTabela =
+                TabelaGerador.criarTabelaComAcoes(
+                        colunas,
+                        dados,
+                        criarAcoes(),
+                        "Novo",
+                        this::abrirNovaAreaDistribuicao
+                );
+
+        if (painelTabela != null) {
+            remove(painelTabela);
+        }
+
+        painelTabela = novaTabela;
+
+        add(painelTabela, BorderLayout.CENTER);
+
+        revalidate();
+        repaint();
     }
 
     private List<TabelaGerador.AcaoTabela> criarAcoes() {
@@ -52,59 +81,136 @@ public class TabelaAreaDistribuicao  extends  JFrame {
         return List.of(
 
                 new TabelaGerador.AcaoTabela() {
+
+                    @Override
                     public String getNome() {
                         return "Editar";
                     }
 
-                    public void executar(int linha, Object[] dadosLinha) {
-                        AreaDistribuicaoModelo areaDistribuicao = buscarAreaDistribuicao(dadosLinha);
-                        SwingUtilities.invokeLater(() ->
-                                 new FormWindow("Atualizar Area de Distribuição", 456, 387, new FormAreaDistribuicao(areaDistribuicao)).setVisible(true)
+                    @Override
+                    public void executar(
+                            int linha,
+                            Object[] dadosLinha
+                    ) {
+
+                        AreaDistribuicaoModelo area =
+                                buscarAreaDistribuicao(dadosLinha);
+
+                        FormWindow tela =
+                                new FormWindow(
+                                        "Atualizar Área de Distribuição",
+                                        456,
+                                        387,
+                                        new FormAreaDistribuicao(area)
+                                );
+
+                        tela.addWindowListener(
+                                new WindowAdapter() {
+
+                                    @Override
+                                    public void windowClosed(
+                                            WindowEvent e
+                                    ) {
+                                        carregarTabela();
+                                    }
+                                }
                         );
+
+                        tela.setVisible(true);
                     }
                 },
 
                 new TabelaGerador.AcaoTabela() {
+
+                    @Override
                     public String getNome() {
                         return "Remover";
                     }
 
-                    public void executar(int linha, Object[] dadosLinha) {
+                    @Override
+                    public void executar(
+                            int linha,
+                            Object[] dadosLinha
+                    ) {
 
-                        int confirm = JOptionPane.showConfirmDialog(
-                                null,
-                                "Remover " + dadosLinha[1] + "?"
-                        );
+                        int confirm =
+                                JOptionPane.showConfirmDialog(
+                                        TabelaAreaDistribuicao.this,
+                                        "Remover "
+                                                + dadosLinha[1]
+                                                + "?",
+                                        "Confirmação",
+                                        JOptionPane.YES_NO_OPTION
+                                );
 
-                        if (confirm == JOptionPane.YES_OPTION) {
-                            JOptionPane.showMessageDialog(null, "Removido!");
+                        if (confirm
+                                == JOptionPane.YES_OPTION) {
+
+                            int id =
+                                    getId(dadosLinha);
+
+                            areaDistribuicaoFile.remover(id);
+
+                            carregarTabela();
+
+                            JOptionPane.showMessageDialog(
+                                    TabelaAreaDistribuicao.this,
+                                    "Removido!"
+                            );
                         }
                     }
                 }
-            );
+        );
     }
 
-    private AreaDistribuicaoModelo buscarAreaDistribuicao(Object[] dadosLinha) {
-        int id = getId(dadosLinha);
+    private AreaDistribuicaoModelo buscarAreaDistribuicao(
+            Object[] dadosLinha
+    ) {
+
+        int id =
+                getId(dadosLinha);
+
         return areaDistribuicao.stream()
-                .filter(u -> u.getId() == id)
+                .filter(
+                        u -> u.getId() == id
+                )
                 .findFirst()
                 .orElse(null);
     }
 
     private int getId(Object[] dadosLinha) {
-        return Integer.parseInt(dadosLinha[0].toString());
+
+        return Integer.parseInt(
+                dadosLinha[0].toString()
+        );
     }
 
-    private void abrirNovoAreaDistribuicao() {
-        SwingUtilities.invokeLater(() ->
-                new FormWindow("Novo AreaDistribuicao", 456, 387, new FormAreaDistribuicao()).setVisible(true)
+    private void abrirNovaAreaDistribuicao() {
+
+        FormWindow tela =
+                new FormWindow(
+                        "Nova Área de Distribuição",
+                        456,
+                        387,
+                        new FormAreaDistribuicao()
+                );
+
+        tela.addWindowListener(
+                new WindowAdapter() {
+
+                    @Override
+                    public void windowClosed(
+                            WindowEvent e
+                    ) {
+                        carregarTabela();
+                    }
+                }
         );
+
+        tela.setVisible(true);
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() ->
-                new TabelaAreaDistribuicao().setVisible(true)
-        );
+        SwingUtilities.invokeLater(() ->new TabelaAreaDistribuicao().setVisible(true));
     }
 }

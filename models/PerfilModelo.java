@@ -3,6 +3,7 @@ package models;
 import anotacoes.CampoFormulario;
 import anotacoes.TipoCampo;
 import modeloFiles.PerfilFile;
+import modeloFiles.SolicitacaoFile;
 import models.common.BaseModelo;
 import models.common.ModeloUtil;
 
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import SwingComponents.*;
+
 
 public class PerfilModelo extends BaseModelo {
 
@@ -104,5 +106,8 @@ public class PerfilModelo extends BaseModelo {
     public void salvarDados()
     {
         new PerfilFile(this).salvarDados();
+    }
+    public void atualizarDados() {
+        new PerfilFile(this).atualizarDados(getId(), this);
     }
 }

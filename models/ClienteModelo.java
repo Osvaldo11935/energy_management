@@ -2,10 +2,13 @@ package models;
 
 import java.io.*;
 import SwingComponents.*;
+import SwingComponentsSrc.DataModelo;
+import SwingComponentsSrc.StringBufferModelo;
 import anotacoes.CampoFormulario;
 import anotacoes.TipoCampo;
 import enums.TipoCliente;
 import enums.TipoContrato;
+import modeloFiles.AreaDistribuicaoFile;
 import modeloFiles.ClienteFile;
 import modeloFiles.UsuarioFile;
 import models.common.BaseModelo;
@@ -55,6 +58,8 @@ public class ClienteModelo extends BaseModelo {
         altura = 80
     )
     private StringBufferModelo observacoes;
+
+    private AreaDistribuicaoModelo areaDistribuicao;
 
     public ClienteModelo()
     {
@@ -110,6 +115,10 @@ public class ClienteModelo extends BaseModelo {
     public String getObservacoes() {
         return observacoes.toStringEliminatingSpaces();
     }
+    public AreaDistribuicaoModelo getAreaDistribuicao() {
+        return new AreaDistribuicaoFile(new AreaDistribuicaoModelo()).obterPorId(getAreaDistribuicaoId());
+    }
+    
     public void setUsuarioId(int usuarioId) {
         this.usuarioId = usuarioId;
     }

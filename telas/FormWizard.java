@@ -33,7 +33,7 @@ public class FormWizard extends JFrame {
         cardLayout = new CardLayout();
         painelCards = new JPanel(cardLayout);
 
-        painelCards.add(new FormCadastroUsuario(id -> {
+        painelCards.add(new FormUsuario(id -> {
             this.idUsuario = id;
 
             configurarProximosPassos();
@@ -75,12 +75,12 @@ public class FormWizard extends JFrame {
 
             painelCards.add(new FormCliente(() -> idUsuario),"PASSO_2");
 
-            painelCards.add(new FormCadastroPessoa(() -> idUsuario),"PASSO_3");
+            painelCards.add(new FormPessoa(() -> idUsuario),"PASSO_3");
 
             totalPassos = 3;
 
         } else {
-            painelCards.add(new FormCadastroPessoa(() -> idUsuario),"PASSO_2");
+            painelCards.add(new FormPessoa(() -> idUsuario),"PASSO_2");
             totalPassos = 2;
         }
     }

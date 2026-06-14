@@ -18,25 +18,25 @@ public class FormSubestacao extends JPanel {
         FormGerador form = new FormGerador(SubestacaoModelo.class);
 
         form.adicionarAcaoBotao("Salvar", obj -> {
-            SubestacaoModelo Subestacao = (SubestacaoModelo) obj;
+            SubestacaoModelo formDados = (SubestacaoModelo) obj;
 
-            List<SubestacaoModelo> Subestacaos = new SubestacaoFile(new SubestacaoModelo()).listar();
+            List<SubestacaoModelo> subestacaos = new SubestacaoFile(new SubestacaoModelo()).listar();
             
-            int novoId = (Subestacaos == null || Subestacaos.isEmpty())? 1: Subestacaos.getLast().getId() + 1;
+            int novoId = (subestacaos == null || subestacaos.isEmpty())? 1: subestacaos.getLast().getId() + 1;
 
             SubestacaoModelo novoSubestacao = new SubestacaoModelo(
                 novoId,
-                Subestacao.getCodigo(),
-                Subestacao.getNome(),
-                Subestacao.getLocalizacao(),
-                Subestacao.getProvincia(),
-                Subestacao.getMunicipio(),
-                Subestacao.getCapacidade(),
-                Subestacao.getTensaoNominal(),
-                Subestacao.getUsuarioId(),
-                Subestacao.getLatitude(),
-                Subestacao.getLongitude(),
-                Subestacao.getObservacoes()
+                formDados.getCodigo(),
+                formDados.getNome(),
+                formDados.getLocalizacao(),
+                formDados.getProvincia(),
+                formDados.getMunicipio(),
+                formDados.getCapacidade(),
+                formDados.getTensaoNominal(),
+                formDados.getUsuarioId(),
+                formDados.getLatitude(),
+                formDados.getLongitude(),
+                formDados.getObservacoes()
             );
             novoSubestacao.salvarDados();
 
@@ -53,24 +53,24 @@ public class FormSubestacao extends JPanel {
         FormGerador form = new FormGerador(SubestacaoModelo.class, dadosSubestacao, "Atualizar");
 
         form.adicionarAcaoBotao("Atualizar", obj -> {
-            SubestacaoModelo Subestacao = (SubestacaoModelo) obj;
+            SubestacaoModelo formDados = (SubestacaoModelo) obj;
 
-            SubestacaoModelo SubestacaoEditado = new SubestacaoModelo(
+            SubestacaoModelo subestacaoEditado = new SubestacaoModelo(
                 dadosSubestacao.getId(),
-                Subestacao.getCodigo(),
-                Subestacao.getNome(),
-                Subestacao.getLocalizacao(),
-                Subestacao.getProvincia(),
-                Subestacao.getMunicipio(),
-                Subestacao.getCapacidade(),
-                Subestacao.getTensaoNominal(),
-                Subestacao.getUsuarioId(),
-                Subestacao.getLatitude(),
-                Subestacao.getLongitude(),
-                Subestacao.getObservacoes()
+                formDados.getCodigo(),
+                formDados.getNome(),
+                formDados.getLocalizacao(),
+                formDados.getProvincia(),
+                formDados.getMunicipio(),
+                formDados.getCapacidade(),
+                formDados.getTensaoNominal(),
+                formDados.getUsuarioId(),
+                formDados.getLatitude(),
+                formDados.getLongitude(),
+                formDados.getObservacoes()
             );
-            SubestacaoEditado.atualizarDados();
-            JOptionPane.showMessageDialog(this, SubestacaoEditado.toString());
+            subestacaoEditado.atualizarDados();
+            JOptionPane.showMessageDialog(this, subestacaoEditado.toString());
         });
 
         add(form, BorderLayout.CENTER);
