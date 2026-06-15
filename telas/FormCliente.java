@@ -1,6 +1,7 @@
 package telas;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -13,7 +14,7 @@ public class FormCliente extends JPanel {
     public FormCliente(Supplier<String> idUsuarioProvider) {
         this.idUsuarioProvider = idUsuarioProvider;
         setLayout(new BorderLayout());
-
+        setPreferredSize(new Dimension(450, 456));
         FormGerador form = new FormGerador(ClienteModelo.class);
 
         form.adicionarAcaoBotao("Salvar", obj -> {
@@ -48,7 +49,8 @@ public class FormCliente extends JPanel {
     public FormCliente(ClienteModelo dadosCliente) {
 
         setLayout(new BorderLayout());
-
+        setPreferredSize(new Dimension(450, 456));
+        
         FormGerador form = new FormGerador(ClienteModelo.class, dadosCliente, "Atualizar");
 
         form.adicionarAcaoBotao("Atualizar", obj -> {

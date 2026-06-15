@@ -1,6 +1,7 @@
 package telas;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.*;
 import javax.swing.*;
 import modeloFiles.PerfilMenuFile;
@@ -10,7 +11,7 @@ public class FormPerfilMenu extends JPanel{
    public FormPerfilMenu() {
 
         setLayout(new BorderLayout());
-
+        setPreferredSize(new Dimension(466, 270));
         FormGerador form = new FormGerador(PerfilMenuModelo.class);
 
         form.adicionarAcaoBotao("Salvar", obj -> {
@@ -39,7 +40,8 @@ public class FormPerfilMenu extends JPanel{
     public FormPerfilMenu(PerfilMenuModelo dadosPerfilMenu) {
 
         setLayout(new BorderLayout());
-
+        setPreferredSize(new Dimension(466, 270));
+        
         FormGerador form = new FormGerador(PerfilMenuModelo.class, dadosPerfilMenu, "Atualizar");
 
         form.adicionarAcaoBotao("Atualizar", obj -> {

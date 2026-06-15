@@ -25,8 +25,7 @@ public class TabelaPerfil extends JFrame {
         setTitle("Perfis");
         setSize(700, 400);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-
+        
         carregarTabela();
     }
 

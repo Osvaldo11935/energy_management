@@ -1,6 +1,7 @@
 package telas;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -14,6 +15,7 @@ public class FormSubestacao extends JPanel {
     public FormSubestacao() {
 
         setLayout(new BorderLayout());
+        setPreferredSize(new Dimension(456, 628));
 
         FormGerador form = new FormGerador(SubestacaoModelo.class);
 
@@ -49,7 +51,8 @@ public class FormSubestacao extends JPanel {
     public FormSubestacao(SubestacaoModelo dadosSubestacao) {
 
         setLayout(new BorderLayout());
-
+        setPreferredSize(new Dimension(456, 628));
+        
         FormGerador form = new FormGerador(SubestacaoModelo.class, dadosSubestacao, "Atualizar");
 
         form.adicionarAcaoBotao("Atualizar", obj -> {

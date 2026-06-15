@@ -1,6 +1,7 @@
 package telas;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.*;
 import javax.swing.*;
 import modeloFiles.AreaDistribuicaoFile;
@@ -10,6 +11,7 @@ public class FormAreaDistribuicao   extends JPanel {
     public FormAreaDistribuicao() {
 
         setLayout(new BorderLayout());
+        setPreferredSize(new Dimension(456, 387));
 
         FormGerador form = new FormGerador(AreaDistribuicaoModelo.class);
 
@@ -26,7 +28,7 @@ public class FormAreaDistribuicao   extends JPanel {
                 areaDistribuicao.getMunicipio(),
                 areaDistribuicao.getComuna(),
                 areaDistribuicao.getBairro(),
-                areaDistribuicao.getCodigoPostal(),
+                areaDistribuicao.getNumeroClientes(),
                 areaDistribuicao.getSubestacaoId()
             );
             novoAreaDistribuicao.salvarDados();
@@ -40,7 +42,8 @@ public class FormAreaDistribuicao   extends JPanel {
     public FormAreaDistribuicao(AreaDistribuicaoModelo dadosAreaDistribuicao) {
 
         setLayout(new BorderLayout());
-
+        setPreferredSize(new Dimension(456, 387));
+        
         FormGerador form = new FormGerador(AreaDistribuicaoModelo.class, dadosAreaDistribuicao, "Atualizar");
 
         form.adicionarAcaoBotao("Atualizar", obj -> {
@@ -52,7 +55,7 @@ public class FormAreaDistribuicao   extends JPanel {
                 areaDistribuicao.getMunicipio(),
                 areaDistribuicao.getComuna(),
                 areaDistribuicao.getBairro(),
-                areaDistribuicao.getCodigoPostal(),
+                areaDistribuicao.getNumeroClientes(),
                 areaDistribuicao.getSubestacaoId()
             );
             areaDistribuicaoEditado.atualizarDados();

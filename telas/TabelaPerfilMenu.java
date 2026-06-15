@@ -29,10 +29,6 @@ public class TabelaPerfilMenu extends JFrame {
 
         setLocationRelativeTo(null);
 
-        setDefaultCloseOperation(
-                DISPOSE_ON_CLOSE
-        );
-
         carregarTabela();
     }
 

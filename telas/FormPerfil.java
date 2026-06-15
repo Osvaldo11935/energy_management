@@ -1,6 +1,7 @@
 package telas;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -13,7 +14,7 @@ public class FormPerfil  extends JPanel {
     public FormPerfil() {
 
         setLayout(new BorderLayout());
-
+        setPreferredSize(new Dimension(300, 300));
         FormGerador form = new FormGerador(PerfilModelo.class);
 
         form.adicionarAcaoBotao("Salvar", obj -> {
@@ -39,7 +40,8 @@ public class FormPerfil  extends JPanel {
     public FormPerfil(PerfilModelo dadosPerfil) {
 
         setLayout(new BorderLayout());
-
+        setPreferredSize(new Dimension(300, 300));
+        
         FormGerador form = new FormGerador(PerfilModelo.class, dadosPerfil, "Atualizar");
 
         form.adicionarAcaoBotao("Atualizar", obj -> {

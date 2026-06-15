@@ -1,18 +1,11 @@
 package models;
 
-import anotacoes.CampoFormulario;
-import anotacoes.TipoCampo;
-import modeloFiles.AreaDistribuicaoFile;
-import modeloFiles.ClienteFile;
-import modeloFiles.SubestacaoFile;
-import models.common.BaseModelo;
-import models.common.ModeloUtil;
+import anotacoes.*;
+import modeloFiles.*;
+import models.common.*;
 import java.io.*;
 import SwingComponents.*;
-import SwingComponentsSrc.StringBufferModelo;
-import provedores.AreaDistribuicaoProvedor;
-import provedores.MunicipioProvedor;
-import provedores.ProvinciaProvedor;
+import provedores.*;
 
 public class AreaDistribuicaoModelo extends BaseModelo {
     @CampoFormulario(
@@ -50,12 +43,12 @@ public class AreaDistribuicaoModelo extends BaseModelo {
     private StringBufferModelo bairro;
 
     @CampoFormulario(
-        descricao = "Codigo Postal",
+        descricao = "Nº de Clientes",
         obrigatorio = true,
         largura = 200,
         linha = 3
     )
-    private StringBufferModelo codigoPostal;
+    private int numeroClientes;
 
     @CampoFormulario(
         descricao = "Subestação",
@@ -76,19 +69,19 @@ public class AreaDistribuicaoModelo extends BaseModelo {
         this.municipio = new StringBufferModelo( 30);
         this.comuna = new StringBufferModelo(30);
         this.bairro = new StringBufferModelo(30);
-        this.codigoPostal = new StringBufferModelo(10);
+        this.numeroClientes = 0;
         this.subestacaoId = 0;
 
     }
     public AreaDistribuicaoModelo(int id, String provincia, String municipio, String comuna,
-            String bairro, String codigoPostal, int subestacaoId) {
+            String bairro, int numeroClientes, int subestacaoId) {
         super();
         setId(id);
         this.provincia = new StringBufferModelo(provincia, 30);
         this.municipio = new StringBufferModelo(municipio, 30);
         this.comuna = new StringBufferModelo(comuna, 30);
         this.bairro = new StringBufferModelo(bairro, 30);
-        this.codigoPostal = new StringBufferModelo(codigoPostal,10);
+        this.numeroClientes = numeroClientes;
         this.subestacaoId = subestacaoId;
     }
 
@@ -104,8 +97,8 @@ public class AreaDistribuicaoModelo extends BaseModelo {
     public String getBairro() {
         return bairro.toStringEliminatingSpaces();
     }
-    public String getCodigoPostal() {
-        return codigoPostal.toStringEliminatingSpaces();
+    public int getNumeroClientes() {
+        return numeroClientes;
     }
     public int getSubestacaoId() {
         return subestacaoId;
@@ -128,8 +121,8 @@ public class AreaDistribuicaoModelo extends BaseModelo {
         this.bairro = new StringBufferModelo(bairro, 30);
     }
 
-    public void setCodigoPostal(String codigoPostal) {
-        this.codigoPostal = new StringBufferModelo(codigoPostal, 10);
+    public void setNumeroClientes(int numeroClientes) {
+        this.numeroClientes = numeroClientes;
     }
 
     public void setSubestacaoId(int subestacaoId) {
@@ -146,8 +139,8 @@ public class AreaDistribuicaoModelo extends BaseModelo {
         str += "Municipio: "+ getMunicipio() + "\n";
         str += "Comuna: "+ getComuna() + "\n";
         str += "Bairro: "+ getBairro() + "\n";
-        str += "Codigo Postal: "+ getCodigoPostal() + "\n";
-        str += "Subestacao: "+ getSubestacaoId() + "\n";
+        str += "Numero de clientes: "+ getNumeroClientes() + "\n";
+        str += "Subestacao: "+ getSubestacao().getNome() + "\n";
 
         return str;
     }
@@ -166,7 +159,7 @@ public class AreaDistribuicaoModelo extends BaseModelo {
            municipio.read(stream);
            comuna.read(stream);
            bairro.read(stream);
-           codigoPostal.read(stream);
+           numeroClientes = stream.readInt();
            subestacaoId = stream.readInt();
         }
         catch(IOException ex)
@@ -184,7 +177,7 @@ public class AreaDistribuicaoModelo extends BaseModelo {
            municipio.write(stream);
            comuna.write(stream);
            bairro.write(stream);
-           codigoPostal.write(stream);
+           stream.writeInt(numeroClientes);
            stream.writeInt(subestacaoId);
         }
         catch(IOException ex)

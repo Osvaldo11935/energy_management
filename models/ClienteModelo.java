@@ -2,8 +2,6 @@ package models;
 
 import java.io.*;
 import SwingComponents.*;
-import SwingComponentsSrc.DataModelo;
-import SwingComponentsSrc.StringBufferModelo;
 import anotacoes.CampoFormulario;
 import anotacoes.TipoCampo;
 import enums.TipoCliente;

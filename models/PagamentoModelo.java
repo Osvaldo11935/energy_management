@@ -29,13 +29,6 @@ public class PagamentoModelo extends BaseModelo {
         linha = 2
     )
     private double valorMultaPaga;
-
-    @CampoFormulario(
-        descricao = "Data do Pagamento",
-        largura = 200,
-        obrigatorio = true,
-        linha = 3
-    )
     private DataModelo dataPagamento;
 
     @CampoFormulario(

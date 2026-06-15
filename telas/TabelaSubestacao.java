@@ -24,7 +24,6 @@ public class TabelaSubestacao extends JFrame {
         setTitle("Subestações");
         setSize(700, 400);
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         carregarTabela();
     }

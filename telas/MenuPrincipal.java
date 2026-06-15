@@ -38,35 +38,16 @@ public class MenuPrincipal extends JFrame {
     }
 
     private void carregarMenus() {
+        List<PerfilMenuModelo> perfilMenus = new PerfilMenuFile(
+                        new PerfilMenuModelo()).buscarMenuPorPerfilId(1);
 
-        List<PerfilMenuModelo> perfilMenus =
-                new PerfilMenuFile(
-                        new PerfilMenuModelo())
-                                .buscarMenuPorPerfilId(
-                                        1);
-
-        perfilMenus =
-                perfilMenus.stream()
-
-                        .filter(
-                                pm ->
-                                        pm.getMenu()
-                                                .getNivelMinimoAcesso()
-                                                <= nivelUsuario)
-
-                        .sorted(
-                                Comparator.comparingInt(
-                                        pm ->
-                                                pm.getMenu()
-                                                        .getOrdem()))
-
+        perfilMenus = perfilMenus.stream()
+                        .filter(pm -> pm.getMenu().getNivelMinimoAcesso()<= nivelUsuario)
+                        .sorted(Comparator.comparingInt(pm ->pm.getMenu().getOrdem()))
                         .toList();
 
-        Map<Integer, JMenu> mapa =
-                new HashMap<>();
+        Map<Integer, JMenu> mapa = new HashMap<>();
 
-
-        // MENU PRINCIPAL
         for (PerfilMenuModelo pm : perfilMenus) {
 
             MenuModelo menu =
@@ -77,95 +58,52 @@ public class MenuPrincipal extends JFrame {
 
             if (menu.getMenuPaiId() == 0) {
 
-                JMenu jm =
-                        new JMenu(
-                                menu.getNome());
+                JMenu jm = new JMenu(menu.getNome());
 
-                mapa.put(
-                        menu.getId(),
-                        jm);
+                mapa.put(menu.getId(),jm);
 
-                menuBar.add(
-                        jm);
+                menuBar.add(jm);
 
-                boolean temFilhos =
-                        perfilMenus.stream()
+                boolean temFilhos = perfilMenus.stream()
+                                .anyMatch(p ->p.getMenu() != null && p.getMenu().getMenuPaiId() == menu.getId());
 
-                                .anyMatch(
-                                        p ->
-                                                p.getMenu()
-                                                        != null
-                                                &&
-                                                p.getMenu()
-                                                        .getMenuPaiId()
-                                                        ==
-                                                        menu.getId());
+                boolean podeAbrir = menu.getCaminhoClasse() != null && !menu.getCaminhoClasse() .isBlank();
 
-                boolean podeAbrir =
-                        menu.getCaminhoClasse()
-                                != null
-                        &&
-                        !menu.getCaminhoClasse()
-                                .isBlank();
-
-                // Menu sem filhos → executa
                 if (!temFilhos && podeAbrir) {
-
-                    jm.addMenuListener(
-                            new MenuListener() {
+                    jm.addMenuListener(new MenuListener() {
 
                                 @Override
-                                public void menuSelected(
-                                        MenuEvent e) {
-
-                                    abrirClasse(
-                                            menu.getCaminhoClasse());
+                                public void menuSelected(MenuEvent e) {
+                                    abrirClasse(menu.getCaminhoClasse());
                                 }
 
                                 @Override
-                                public void menuDeselected(
-                                        MenuEvent e) {
+                                public void menuDeselected(MenuEvent e) {
                                 }
 
                                 @Override
-                                public void menuCanceled(
-                                        MenuEvent e) {
+                                public void menuCanceled(MenuEvent e) {
                                 }
                             });
                 }
             }
         }
 
-
-        // SUBMENUS
         for (PerfilMenuModelo pm : perfilMenus) {
+            MenuModelo menu = pm.getMenu();
 
-            MenuModelo menu =
-                    pm.getMenu();
-
-            if (menu == null)
-                continue;
+            if (menu == null) continue;
 
             if (menu.getMenuPaiId() != 0) {
 
-                JMenu pai =
-                        mapa.get(
-                                menu.getMenuPaiId());
+                JMenu pai = mapa.get(menu.getMenuPaiId());
 
-                if (pai == null)
-                    continue;
+                if (pai == null) continue;
 
-                JMenuItem item =
-                        new JMenuItem(
-                                menu.getNome());
+                JMenuItem item = new JMenuItem(menu.getNome());
 
-                item.addActionListener(
-                        e ->
-                                abrirClasse(
-                                        menu.getCaminhoClasse()));
-
-                pai.add(
-                        item);
+                item.addActionListener( e ->abrirClasse(menu.getCaminhoClasse()));
+                pai.add(item);
             }
         }
 
@@ -174,26 +112,34 @@ public class MenuPrincipal extends JFrame {
         menuBar.repaint();
     }
 
-    private void abrirClasse(
-            String caminho) {
-
+    private void abrirClasse(String caminho) {
         try {
 
             Class<?> classe = Class.forName(caminho);
             Object obj = classe.getDeclaredConstructor().newInstance();
-        if (obj instanceof JFrame frame) {
+            if (obj instanceof JFrame frame) {
 
-            frame.setLocationRelativeTo(null);
+                frame.setLocationRelativeTo(null);
+                frame.setVisible(true);
+            }
+            else if (obj instanceof JDialog dialog) {
 
-            frame.setVisible(true);
-        }
+                dialog.setLocationRelativeTo(null);
+                dialog.setVisible(true);
+            }
+            else if (obj instanceof JPanel panel) {
+                JFrame frame = new JFrame();
 
-        else if (obj instanceof JDialog dialog) {
+                frame.setContentPane(panel);
 
-            dialog.setLocationRelativeTo(null);
+                frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-            dialog.setVisible(true);
-        }
+                frame.pack();
+
+                frame.setLocationRelativeTo(null);
+
+                frame.setVisible(true);
+            }
         }
         catch (Exception ex) {
             ex.printStackTrace();
@@ -201,10 +147,7 @@ public class MenuPrincipal extends JFrame {
         }
     }
 
-    public static void main(
-            String[] args) {
-
-        new MenuPrincipal(
-                2);
+    public static void main(String[] args) {
+        new MenuPrincipal(2);
     }
 }
