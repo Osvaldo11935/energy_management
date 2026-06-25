@@ -21,7 +21,10 @@ public @interface CampoFormulario {
 
     int altura() default 35;
     int linha() default -1;
+    String dependeDe() default "";
+    boolean pesquisavel() default false;
     Class<? extends Enum<?>> enumType() default DefaultEnum.class;
     Class<? extends ComboDadosProvedor> provider()
             default ComboDadosProvedor.class;
+
 }

@@ -6,9 +6,13 @@ import modeloFiles.*;
 import models.common.BaseModelo;
 import models.common.ModeloUtil;
 import java.io.*;
+import java.time.LocalDate;
+
 import SwingComponents.*;
+import provedores.BoleanoProvedor;
 import provedores.MenuProvedor;
 import provedores.PerfilProvedor;
+import utils.DataMapper;
 
 public class PerfilMenuModelo  extends BaseModelo{
 
@@ -35,7 +39,7 @@ public class PerfilMenuModelo  extends BaseModelo{
     @CampoFormulario(
             descricao="Pode visualizar",
             tipo=TipoCampo.COMBO,
-            opcoes={"Sim","Não"},
+            provider = BoleanoProvedor.class,
             largura = 100,
             linha = 2
     )
@@ -44,7 +48,7 @@ public class PerfilMenuModelo  extends BaseModelo{
     @CampoFormulario(
             descricao="Pode criar",
             tipo=TipoCampo.COMBO,
-            opcoes={"Sim","Não"},
+            provider = BoleanoProvedor.class,
             largura = 100,
             linha = 2
     )
@@ -53,7 +57,7 @@ public class PerfilMenuModelo  extends BaseModelo{
     @CampoFormulario(
             descricao="Pode editar",
             tipo=TipoCampo.COMBO,
-            opcoes={"Sim","Não"},
+            provider = BoleanoProvedor.class,
             largura = 100,
             linha = 2
     )
@@ -62,7 +66,7 @@ public class PerfilMenuModelo  extends BaseModelo{
     @CampoFormulario(
             descricao="Pode eliminar",
             tipo=TipoCampo.COMBO,
-            opcoes={"Sim","Não"},
+            provider = BoleanoProvedor.class,
             largura = 100,
             linha = 2
     )
@@ -95,7 +99,7 @@ public class PerfilMenuModelo  extends BaseModelo{
         this.podeCriar = podeCriar;
         this.podeEditar = podeEditar;
         this.podeEliminar = podeEliminar;
-        this.dataAtribuicao = new DataModelo();
+        this.dataAtribuicao = new DataModelo(DataMapper.normalizarData(LocalDate.now().toString()));
     }
 
     public int getPerfilId() {
@@ -148,8 +152,8 @@ public class PerfilMenuModelo  extends BaseModelo{
     public void setPodeEliminar(boolean podeEliminar) {
         this.podeEliminar = podeEliminar;
     }
-    public void setDataAtribuicao(DataModelo dataAtribuicao) {
-        this.dataAtribuicao = dataAtribuicao;
+    public void setDataAtribuicao(String dataAtribuicao) {
+        this.dataAtribuicao = new DataModelo(DataMapper.normalizarData(dataAtribuicao));
     }
 
     public String toString()

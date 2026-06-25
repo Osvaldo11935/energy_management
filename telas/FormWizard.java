@@ -19,7 +19,7 @@ public class FormWizard extends JFrame {
     private int passoAtual = 0;
     private int totalPassos = 2;
 
-    private final int[] alturas = {387, 450, 600};
+    private final int[] alturas = {387,450, 280, 600};
 
     private String idUsuario;
 
@@ -68,16 +68,15 @@ public class FormWizard extends JFrame {
                 new UsuarioFile(new UsuarioModelo())
                         .obterPorId(Integer.parseInt(idUsuario));
 
-        if (usuario.getPerfil()
-                .getNome()
-                .toLowerCase()
-                .contains("cliente")) {
+        if (usuario.ehCliente()) {
 
-            painelCards.add(new FormCliente(() -> idUsuario),"PASSO_2");
+            painelCards.add(new FormCliente(() -> idUsuario, clienteId ->
+            {
+                painelCards.add(new FormContador(() -> clienteId),"PASSO_3");
+                painelCards.add(new FormPessoa(() -> idUsuario),"PASSO_4");
+                totalPassos = 4;
+            }),"PASSO_2");
 
-            painelCards.add(new FormPessoa(() -> idUsuario),"PASSO_3");
-
-            totalPassos = 3;
 
         } else {
             painelCards.add(new FormPessoa(() -> idUsuario),"PASSO_2");

@@ -12,5 +12,8 @@ public class CorteEnergiaFile extends CrudFile<CorteEnergiaModelo> {
     {
         super(System.getProperty("user.dir")+ "/data/CorteEnergia.DAT", model, CorteEnergiaModelo.class);
     }
-
+    public static CorteEnergiaFile instaciar()
+    {
+        return new CorteEnergiaFile(new CorteEnergiaModelo());
+    }
 }

@@ -9,7 +9,8 @@ public class AreaDistribuicaoProvedor implements ComboDadosProvedor{
     @Override
     public List<ComboItem> carregar() {
 
-        List<AreaDistribuicaoModelo> areDistribuicoes = new AreaDistribuicaoFile(new AreaDistribuicaoModelo())
+        List<AreaDistribuicaoModelo> areDistribuicoes = AreaDistribuicaoFile
+                                     .instaciar()
                                      .listar();
 
         return areDistribuicoes.stream()

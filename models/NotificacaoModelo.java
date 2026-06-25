@@ -1,14 +1,21 @@
 package models;
 
 import java.io.*;
+import java.time.LocalDate;
+
 import SwingComponents.*;
 import anotacoes.CampoFormulario;
 import anotacoes.TipoCampo;
+import enums.TipoNotificacao;
+import modeloFiles.AreaDistribuicaoFile;
+import modeloFiles.ClienteFile;
 import modeloFiles.NotificacaoFile;
 import models.common.BaseModelo;
 import models.common.ModeloUtil;
 import provedores.AreaDistribuicaoProvedor;
+import provedores.ClienteProvedor;
 import provedores.UsuarioProvedor;
+import utils.DataMapper;
 
 public class NotificacaoModelo extends BaseModelo {
 
@@ -18,7 +25,7 @@ public class NotificacaoModelo extends BaseModelo {
         obrigatorio = true,
         linha = 1,
         tipo = TipoCampo.COMBO,
-        provider = UsuarioProvedor.class
+        provider = ClienteProvedor.class
     )
     private int clienteId;
 
@@ -34,7 +41,7 @@ public class NotificacaoModelo extends BaseModelo {
 
     @CampoFormulario(
         descricao = "Título",
-        largura = 300,
+        largura = 400,
         obrigatorio = true,
         linha = 2
     )
@@ -43,7 +50,7 @@ public class NotificacaoModelo extends BaseModelo {
     @CampoFormulario(
         tipo = TipoCampo.MULTTEXTO,
         descricao = "Mensagem",
-        largura = 500,
+        largura = 400,
         obrigatorio = true,
         linha = 3,
         altura = 80
@@ -52,31 +59,22 @@ public class NotificacaoModelo extends BaseModelo {
 
     @CampoFormulario(
         descricao = "Tipo",
-        largura = 200,
+        largura = 400,
         obrigatorio = true,
         linha = 4,
+        enumType = TipoNotificacao.class,
         tipo = TipoCampo.COMBO
     )
     private StringBufferModelo tipo;
 
-    @CampoFormulario(
-        descricao = "Data de Envio",
-        largura = 200,
-        obrigatorio = true,
-        linha = 4
-    )
     private DataModelo dataEnvio;
 
-    @CampoFormulario(
-        descricao = "Lida",
-        largura = 100,
-        obrigatorio = true,
-        linha = 5,
-        tipo = TipoCampo.COMBO
-    )
     private boolean lida;
+    
+    private AreaDistribuicaoModelo areaDistribuicao;
 
-    // Construtores
+    private ClienteModelo cliente;
+
     public NotificacaoModelo() {
         super();
         this.clienteId = 0;
@@ -89,7 +87,7 @@ public class NotificacaoModelo extends BaseModelo {
     }
 
     public NotificacaoModelo(int id, int clienteId, int areaId, String titulo, 
-                            String mensagem, String tipo, String dataEnvio, boolean lida) {
+                            String mensagem, String tipo) {
         super();
         setId(id);
         this.clienteId = clienteId;
@@ -97,11 +95,10 @@ public class NotificacaoModelo extends BaseModelo {
         this.titulo = new StringBufferModelo(titulo, 100);
         this.mensagem = new StringBufferModelo(mensagem, 500);
         this.tipo = new StringBufferModelo(tipo, 30);
-        this.dataEnvio = new DataModelo(dataEnvio);
-        this.lida = lida;
+        this.dataEnvio = new DataModelo(DataMapper.normalizarData(LocalDate.now().toString()));
+        this.lida = false;
     }
 
-    // Getters
     public int getClienteId() {
         return clienteId;
     }
@@ -133,8 +130,17 @@ public class NotificacaoModelo extends BaseModelo {
     public boolean getLida() {
         return lida;
     }
+    
+    public ClienteModelo getCliente()
+    {
+        return ClienteFile.instaciar().obterPorId(getClienteId());
+    }
 
-    // Setters
+    public AreaDistribuicaoModelo getAreaDistribuicao()
+    {
+        return AreaDistribuicaoFile.instaciar().obterPorId(getAreaId());
+    }
+
     public void setClienteId(int clienteId) {
         this.clienteId = clienteId;
     }
@@ -156,7 +162,7 @@ public class NotificacaoModelo extends BaseModelo {
     }
 
     public void setDataEnvio(String dataEnvio) {
-        this.dataEnvio = new DataModelo(dataEnvio);
+        this.dataEnvio = new DataModelo(DataMapper.normalizarData(dataEnvio));
     }
 
     public void setLida(boolean lida) {

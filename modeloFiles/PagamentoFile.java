@@ -13,4 +13,8 @@ public class PagamentoFile extends CrudFile<PagamentoModelo> {
         super(System.getProperty("user.dir")+ "/data/Pagamento.DAT", model, PagamentoModelo.class);
     }
 
+    public static  PagamentoFile instaciar()
+    {
+        return new  PagamentoFile(new  PagamentoModelo());
+    }
 }

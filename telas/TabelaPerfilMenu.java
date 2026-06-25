@@ -54,10 +54,9 @@ public class TabelaPerfilMenu extends JFrame {
                                 u ->
                                         new Object[]{
                                                 u.getId(),
-                                                u.getPerfil()
-                                                        .getNome(),
-                                                u.getMenu()
-                                                        .getNome(),
+                                                u.getPerfil().getNome(),
+                                                u.getMenu().getMenuPaiId() > 0 ? u.getMenu().getMenuPai().getNome() +" - "+ u.getMenu().getNome()
+                                                                               : u.getMenu().getNome(),
                                                 u.isPodeVisualizar(),
                                                 u.isPodeCriar(),
                                                 u.isPodeEditar(),
@@ -207,15 +206,9 @@ public class TabelaPerfilMenu extends JFrame {
 
         return perfilMenu
                 .stream()
-                .filter(
-                        u ->
-                                u.getId()
-                                        == id
-                )
+                .filter(u ->u.getId() == id)
                 .findFirst()
-                .orElse(
-                        null
-                );
+                .orElse(null);
     }
 
     private int getId(

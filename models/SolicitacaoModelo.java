@@ -1,23 +1,43 @@
 package models;
 
 import java.io.*;
+import java.time.LocalDate;
+
 import SwingComponents.*;
 import anotacoes.CampoFormulario;
 import anotacoes.TipoCampo;
+import enums.EstadoSolicitacao;
+import enums.Prioridade;
+import enums.TipoSolicitacao;
+import modeloFiles.ClienteFile;
 import modeloFiles.SolicitacaoFile;
+import modeloFiles.UsuarioFile;
 import models.common.BaseModelo;
 import models.common.ModeloUtil;
+import provedores.ContratoProvedor;
+import provedores.TecnicosProvedor;
 import provedores.UsuarioProvedor;
+import utils.DataMapper;
 
 public class SolicitacaoModelo extends BaseModelo {
     
-    private int clienteId;
-    
+    private int usuarioId;
+    @CampoFormulario(
+        descricao = "Contrato do Cliente",
+        largura = 200,
+        obrigatorio = true,
+        linha = 1,
+        tipo = TipoCampo.COMBO,
+        provider = ContratoProvedor.class
+    )
+    private int contratoId;
     @CampoFormulario(
         descricao = "Tipo de Solicitação",
         largura = 200,
         obrigatorio = true,
-        linha = 1
+        linha = 1,
+        tipo = TipoCampo.COMBO,
+        enumType = TipoSolicitacao.class
     )
     private StringBufferModelo tipoSolicitacao;
     
@@ -27,7 +47,7 @@ public class SolicitacaoModelo extends BaseModelo {
         largura = 400,
         obrigatorio = true,
         linha = 2,
-        altura = 60
+        altura = 80
     )
     private StringBufferModelo descricao;
     
@@ -37,40 +57,34 @@ public class SolicitacaoModelo extends BaseModelo {
         obrigatorio = true,
         linha = 3,
         tipo = TipoCampo.COMBO,
-        opcoes = { "BAIXA", "ALTA", "URGENTE" }
+        enumType = Prioridade.class
     )
     private StringBufferModelo prioridade;
     
-    @CampoFormulario(
-        descricao = "Data de Abertura",
-        largura = 200,
-        obrigatorio = true,
-        linha = 3
-    )
     private DataModelo dataAbertura;
     
-    @CampoFormulario(
-        descricao = "Status",
-        largura = 200,
-        obrigatorio = true,
-        linha = 4,
-        tipo = TipoCampo.COMBO
-    )
     private StringBufferModelo status;
     
     @CampoFormulario(
         descricao = "Técnico Responsável",
         largura = 200,
         obrigatorio = false,
-        linha = 4,
+        linha = 3,
         tipo = TipoCampo.COMBO,
-        provider = UsuarioProvedor.class
+        provider = TecnicosProvedor.class
     )
     private int tecnicoResponsavelId;
+
+    private int solicitacaoPaiId;
     
+    private ClienteModelo contrato;
+
+    private UsuarioModelo tecnicoResponsavel;
+
     public SolicitacaoModelo() {
         super();
-        this.clienteId = 0;
+        this.usuarioId = 0;
+        this.contratoId = 0;
         this.tipoSolicitacao = new StringBufferModelo(50);
         this.descricao = new StringBufferModelo(500);
         this.prioridade = new StringBufferModelo(20);
@@ -79,22 +93,26 @@ public class SolicitacaoModelo extends BaseModelo {
         this.tecnicoResponsavelId = 0;
     }
     
-    public SolicitacaoModelo(int id, int clienteId, String tipoSolicitacao, 
-                            String descricao, String prioridade, String dataAbertura,
-                            String status, int tecnicoResponsavelId) {
+    public SolicitacaoModelo(int id, int usuarioId, int contratoId, String tipoSolicitacao, 
+                            String descricao, String prioridade, int tecnicoResponsavelId, int solicitacaoPaiId) {
         super();
         setId(id);
-        this.clienteId = clienteId;
+        this.usuarioId = usuarioId;
+        this.contratoId = contratoId;
         this.tipoSolicitacao = new StringBufferModelo(tipoSolicitacao, 50);
         this.descricao = new StringBufferModelo(descricao, 500);
         this.prioridade = new StringBufferModelo(prioridade, 20);
-        this.dataAbertura = new DataModelo(dataAbertura);
-        this.status = new StringBufferModelo(status, 30);
+        this.dataAbertura = new DataModelo(DataMapper.normalizarData(LocalDate.now().toString()));
+        this.status = new StringBufferModelo(EstadoSolicitacao.PENDENTE.toString(), 30);
         this.tecnicoResponsavelId = tecnicoResponsavelId;
+        this.solicitacaoPaiId = solicitacaoPaiId;
     }
-    
-    public int getClienteId() {
-        return clienteId;
+    public int getUsuarioId() {
+        return usuarioId;
+    }
+
+    public int getContratoId() {
+        return contratoId;
     }
     
     public String getTipoSolicitacao() {
@@ -120,9 +138,27 @@ public class SolicitacaoModelo extends BaseModelo {
     public int getTecnicoResponsavelId() {
         return tecnicoResponsavelId;
     }
+    public int getSolicitacaoPaiId()
+    {
+        return solicitacaoPaiId;
+    }
     
-    public void setClienteId(int clienteId) {
-        this.clienteId = clienteId;
+    public ClienteModelo getContrato()
+    {
+       return ClienteFile.instaciar().obterPorId(getContratoId());
+    }
+
+    public UsuarioModelo getTecnicoResponsavel()
+    {
+        return UsuarioFile.instaciar().obterPorId(getTecnicoResponsavelId());
+    }
+
+    public void setUsuarioId(int usuarioId) {
+        this.usuarioId = usuarioId;
+    }
+
+    public void setContratoId(int contratoId) {
+        this.contratoId = contratoId;
     }
     
     public void setTipoSolicitacao(String tipoSolicitacao) {
@@ -148,13 +184,17 @@ public class SolicitacaoModelo extends BaseModelo {
     public void setTecnicoResponsavelId(int tecnicoResponsavelId) {
         this.tecnicoResponsavelId = tecnicoResponsavelId;
     }
-    
+    public void setSolicitacaoPaiId(int solicitacaoPaiId)
+    {
+        this.solicitacaoPaiId = solicitacaoPaiId;
+    }
     @Override
     public String toString() {
         String str = "Dados da Solicitação\n\n";
         
         str += "ID: " + getId() + "\n";
-        str += "Cliente ID: " + getClienteId() + "\n";
+        str += "Usuario ID: " + getUsuarioId() + "\n";
+        str += "Contrato ID: " + getContratoId() + "\n";
         str += "Tipo de Solicitação: " + getTipoSolicitacao() + "\n";
         str += "Descrição: " + getDescricao() + "\n";
         str += "Prioridade: " + getPrioridade() + "\n";
@@ -174,13 +214,15 @@ public class SolicitacaoModelo extends BaseModelo {
     public void read(RandomAccessFile stream) {
         try {
             readBase(stream);
-            clienteId = stream.readInt();
+            usuarioId = stream.readInt();
+            contratoId = stream.readInt();
             tipoSolicitacao.read(stream);
             descricao.read(stream);
             prioridade.read(stream);
             dataAbertura.read(stream);
             status.read(stream);
             tecnicoResponsavelId = stream.readInt();
+            solicitacaoPaiId = stream.readInt();
         } catch(IOException ex) {
             ex.printStackTrace();
         }
@@ -190,13 +232,15 @@ public class SolicitacaoModelo extends BaseModelo {
     public void write(RandomAccessFile stream) {
         try {
             writeBase(stream);
-            stream.writeInt(clienteId);
+            stream.writeInt(usuarioId);
+            stream.writeInt(contratoId);
             tipoSolicitacao.write(stream);
             descricao.write(stream);
             prioridade.write(stream);
             dataAbertura.write(stream);
             status.write(stream);
             stream.writeInt(tecnicoResponsavelId);
+            stream.writeInt(solicitacaoPaiId);
         } catch(IOException ex) {
             ex.printStackTrace();
             throw new RuntimeException(ex);

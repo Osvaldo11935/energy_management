@@ -1,6 +1,8 @@
 package models;
 
 import java.io.*;
+import java.time.LocalDate;
+
 import SwingComponents.*;
 import anotacoes.CampoFormulario;
 import anotacoes.TipoCampo;
@@ -11,6 +13,7 @@ import models.common.ModeloUtil;
 import provedores.MunicipioProvedor;
 import provedores.ProvinciaProvedor;
 import provedores.UsuarioProvedor;
+import utils.DataMapper;
 
 public class SubestacaoModelo extends BaseModelo {
     @CampoFormulario(
@@ -83,9 +86,7 @@ public class SubestacaoModelo extends BaseModelo {
         descricao = "Latitude",
         largura = 200,
         obrigatorio = true,
-        tipo = TipoCampo.COMBO,
-        linha = 5,
-        provider = UsuarioProvedor.class
+        linha = 5
     )
     private double latitude;
     @CampoFormulario(
@@ -134,8 +135,8 @@ public class SubestacaoModelo extends BaseModelo {
         this.municipio = new StringBufferModelo(municipio, 30);
         this.capacidade = capacidade;
         this.tensaoNominal = tensaoNominal;
-        this.dataInstalacao = new DataModelo();
-        this.ultimaManutencao = new DataModelo();
+        this.dataInstalacao = new DataModelo(DataMapper.normalizarData(LocalDate.now().toString()));
+        this.ultimaManutencao = new DataModelo(DataMapper.normalizarData(LocalDate.now().toString()));
         this.usuarioId = usuarioId;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -312,8 +313,8 @@ public class SubestacaoModelo extends BaseModelo {
             municipio.write(stream);  
             stream.writeDouble(capacidade); 
             stream.writeDouble(tensaoNominal);
-            dataInstalacao.read(stream);
-            ultimaManutencao.read(stream);
+            dataInstalacao.write(stream);
+            ultimaManutencao.write(stream);
             stream.writeInt(usuarioId);
             stream.writeDouble(latitude); 
             stream.writeDouble(longitude); 

@@ -4,8 +4,8 @@ import anotacoes.*;
 import modeloFiles.*;
 import models.common.*;
 import java.io.*;
-import SwingComponents.*;
 import provedores.*;
+import SwingComponents.*;
 
 public class AreaDistribuicaoModelo extends BaseModelo {
     @CampoFormulario(
@@ -13,6 +13,7 @@ public class AreaDistribuicaoModelo extends BaseModelo {
         tipo = TipoCampo.COMBO, 
         largura = 200,
         linha = 1,
+        pesquisavel = true,
         provider = ProvinciaProvedor.class
     )
     private StringBufferModelo provincia;
@@ -22,6 +23,8 @@ public class AreaDistribuicaoModelo extends BaseModelo {
         tipo = TipoCampo.COMBO, 
         largura = 200,
         linha = 1,
+        pesquisavel = true,
+        dependeDe = "provincia",
         provider = MunicipioProvedor.class
     )
     private StringBufferModelo municipio;
@@ -56,7 +59,7 @@ public class AreaDistribuicaoModelo extends BaseModelo {
         largura = 200,
         linha = 3,
         tipo = TipoCampo.COMBO,
-        provider = AreaDistribuicaoProvedor.class
+        provider = SubestacaoProvedor.class
     )
     private int subestacaoId;
 

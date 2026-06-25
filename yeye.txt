@@ -618,3 +618,252 @@ public class Analise {
      */
     
 }
+
+
+
+
+package telas;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.FlowLayout;
+import java.util.*;
+import java.util.function.Supplier;
+import javax.swing.*;
+import modeloFiles.ClienteFile;
+import modeloFiles.ContadorFile;
+import models.ClienteModelo;
+import models.ContadorModelo;
+import telas.componentes.*;
+
+public class DetalheContrato {
+    private JanelaDetalheBuilder builder;
+    public DetalheContrato()
+    {
+        builder = new JanelaDetalheBuilder("Detalhes do Contrato");
+    }
+    public void criarJanela(Supplier<String> idUsuarioProvider) {
+        String idUsuario = idUsuarioProvider.get();
+        
+        if (idUsuario == null || idUsuario.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "ID do usuário não encontrado!", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        try {
+            ClienteFile arquivo = new ClienteFile(new ClienteModelo());
+            System.out.print("QWERTY"+ idUsuario);
+            List<ClienteModelo> clientes = arquivo.buscarClientePorUsuarioId(Integer.parseInt(idUsuario));
+            
+            if (clientes == null || clientes.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Nenhum contrato encontrado!", "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            if (clientes.size() > 1) 
+                criarJanelaComAbas(clientes, idUsuario);
+            else 
+                return criarPainelContrato(clientes.get(0), idUsuario);
+            
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "ID do usuário inválido!", "Erro", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Erro ao carregar dados: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    private void criarJanelaUnica(ClienteModelo cliente, String idUsuario) {
+        ContadorFile contadorFile = new ContadorFile(new ContadorModelo());
+        
+        ContadorModelo contador = contadorFile.buscarPorClienteId(cliente.getId());
+        builder.setTamanho(600, 550)
+            .adicionarTitulo("INFORMAÇÕES DO CONTRATO")
+            .adicionarSecao("dadosContrato", "DADOS DO CONTRATO", true, panel -> {
+                PainelCamposGrid grid = new PainelCamposGrid();
+                grid.adicionarCampo("ID do Contrato:", String.valueOf(cliente.getId()));
+                grid.adicionarCampo("Tipo de Contrato:", cliente.getTipoContrato());
+                grid.adicionarCampo("Tipo de Cliente:", cliente.getTipoCliente());
+                grid.adicionarCampo("Saldo Devedor:", formatarMoeda(cliente.getSaldoDevedor()));
+                grid.adicionarCampo("Crédito Disponível:", formatarMoeda(cliente.getCreditoDisponivel()));
+                grid.adicionarCampo("Limite de Consumo Mensal:", formatarMoeda(cliente.getLimiteConsumoMensal()));
+                grid.adicionarCampo("Data do Contrato:", cliente.getDataCadastro());
+                grid.adicionarCampo("Área de Distribuição:", 
+                    cliente.getAreaDistribuicao().getProvincia() + " - " + cliente.getAreaDistribuicao().getBairro());
+                grid.adicionarCampo("Observações:", cliente.getObservacoes());
+                //panel.add(grid);
+                panel.add(grid, BorderLayout.CENTER);
+
+                builder.adicionarBotoesSecao(panel,
+                    new BotaoSecao("Editar", e -> {
+                        JOptionPane.showMessageDialog(null, "Editar contrato " + cliente.getId());
+                    }),
+
+                    new BotaoSecao("Excluir", e -> {
+                        int confirmar = JOptionPane.showConfirmDialog(null, "Deseja excluir?");
+
+                        if (confirmar == JOptionPane.YES_OPTION) {
+                        }
+                    })
+                );
+            });
+            
+            if(contador != null)
+            {
+                builder.adicionarSecao("dadosContador", "DADOS DO CONTADOR", false, pane ->{
+                    PainelCamposGrid grid = new PainelCamposGrid();
+                    grid.adicionarCampo("ID do contador", String.valueOf(contador.getId()));
+                    grid.adicionarCampo("Numero de Serie", contador.getNumeroSerie());
+                    grid.adicionarCampo("Tipo de Contador", contador.getTipoContador());
+                    grid.adicionarCampo("Limite de Consumo", formatarMoeda(contador.getLimiteConsumo()));
+                    grid.adicionarCampo("Data da Instalação", contador.getDataInstalacao());
+                    pane.add(grid, BorderLayout.CENTER);
+                    builder.adicionarBotoesSecao(pane,
+                        new BotaoSecao("Editar", e -> {
+                            JOptionPane.showMessageDialog(null, "Editar contrato " + cliente.getId());
+                        }),
+
+                        new BotaoSecao("Excluir", e -> {
+                            int confirmar = JOptionPane.showConfirmDialog(null, "Deseja excluir?");
+                            if (confirmar == JOptionPane.YES_OPTION) {}
+                        })
+                    );
+                });
+            }
+        
+        JFrame frame = builder.construir();
+        frame.setVisible(true);
+    }
+    
+    private void criarJanelaComAbas(List<ClienteModelo> clientes, String idUsuario) {
+        JFrame frame = new JFrame("Contratos do Cliente");
+        frame.setSize(650, 600);
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        
+        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+        
+        for (ClienteModelo cliente : clientes) {
+            JPanel contratoPanel = criarPainelContrato(cliente, idUsuario, frame);
+            tabbedPane.addTab("Contrato #" + cliente.getId(), contratoPanel);
+        }
+        
+        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        mainPanel.add(tabbedPane, BorderLayout.CENTER);
+        
+        JPanel botoesPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        JButton btnFechar = new JButton("Fechar");
+        btnFechar.addActionListener(e -> frame.dispose());
+        btnFechar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        botoesPanel.add(btnFechar);
+        
+        mainPanel.add(botoesPanel, BorderLayout.SOUTH);
+        frame.setContentPane(mainPanel);
+        frame.setVisible(true);
+    }
+    
+    private JPanel criarPainelContrato(ClienteModelo cliente, String idUsuario) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(Color.WHITE);
+
+        ContadorFile contadorFile = new ContadorFile(new ContadorModelo());
+        
+        ContadorModelo contador = contadorFile.buscarPorClienteId(cliente.getId());
+
+        builder = new JanelaDetalheBuilder("")
+            .setTamanho(600, 500)
+            .adicionarTitulo("INFORMAÇÕES DO CONTRATO")
+            .adicionarSecao("dadosContrato", "DADOS DO CONTRATO", true, contentPanel -> {
+                PainelCamposGrid grid = new PainelCamposGrid();
+                grid.adicionarCampo("ID do Contrato:", String.valueOf(cliente.getId()));
+                grid.adicionarCampo("Tipo de Contrato:", cliente.getTipoContrato());
+                grid.adicionarCampo("Tipo de Cliente:", cliente.getTipoCliente());
+                grid.adicionarCampo("Saldo Devedor:", formatarMoeda(cliente.getSaldoDevedor()));
+                grid.adicionarCampo("Crédito Disponível:", formatarMoeda(cliente.getCreditoDisponivel()));
+                grid.adicionarCampo("Limite de Consumo Mensal:", formatarMoeda(cliente.getLimiteConsumoMensal()));
+                grid.adicionarCampo("Data do Contrato:", cliente.getDataCadastro());
+                grid.adicionarCampo("Área de Distribuição:", 
+                    cliente.getAreaDistribuicao().getProvincia() + " - " + cliente.getAreaDistribuicao().getBairro());
+                grid.adicionarCampo("Observações:", cliente.getObservacoes());
+                contentPanel.add(grid, BorderLayout.CENTER);
+                
+                builder.adicionarBotoesSecao(contentPanel,
+                    new BotaoSecao("Editar", e -> {
+                        JOptionPane.showMessageDialog(null, "Editar contrato " + cliente.getId());
+                    }),
+
+                    new BotaoSecao("Excluir", e -> {
+                        int confirmar = JOptionPane.showConfirmDialog(null, "Deseja excluir?");
+                        if (confirmar == JOptionPane.YES_OPTION) {}
+                    })
+                );
+            });
+            if(contador != null)
+            {
+               builder.adicionarSecao("dadosContador", "DADOS DO CONTADOR", false, contentPanel ->{
+                PainelCamposGrid grid = new PainelCamposGrid();
+                grid.adicionarCampo("ID do contador", String.valueOf(contador.getId()));
+                grid.adicionarCampo("Numero de Serie", contador.getNumeroSerie());
+                grid.adicionarCampo("Tipo de Contador", contador.getTipoContador());
+                grid.adicionarCampo("Limite de Consumo", formatarMoeda(contador.getLimiteConsumo()));
+                grid.adicionarCampo("Data da Instalação", contador.getDataInstalacao());
+                contentPanel.add(grid, BorderLayout.CENTER);
+                builder.adicionarBotoesSecao(contentPanel,
+                    new BotaoSecao("Editar", e -> {
+                        JOptionPane.showMessageDialog(null, "Editar contrato " + cliente.getId());
+                    }),
+
+                    new BotaoSecao("Excluir", e -> {
+                        int confirmar = JOptionPane.showConfirmDialog(null, "Deseja excluir?");
+                        if (confirmar == JOptionPane.YES_OPTION) {}
+                    })
+                );
+            });
+            }
+        panel.add(builder.construirPainel(),BorderLayout.CENTER);
+        return panel;
+    }
+    
+    private String formatarMoeda(Object valor) {
+        if (valor == null) {
+            return "0.00";
+        }
+        
+        try {
+            double valorNumerico;
+            if (valor instanceof Double) {
+                valorNumerico = (Double) valor;
+            } else if (valor instanceof String) {
+                String strValor = (String) valor;
+                if (strValor == null || strValor.isEmpty()) {
+                    return "0.00";
+                }
+                valorNumerico = Double.parseDouble(strValor);
+            } else if (valor instanceof Number) {
+                valorNumerico = ((Number) valor).doubleValue();
+            } else {
+                return valor.toString();
+            }
+            return String.format("%.2f", valorNumerico);
+        } catch (NumberFormatException e) {
+            return valor.toString();
+        }
+    }
+    
+    private void editarContrato(String idUsuario, JFrame parentFrame) {
+        if (idUsuario != null && !idUsuario.isEmpty()) {
+            SwingUtilities.invokeLater(() -> {
+                JFrame frame = new JFrame();
+                frame.add(new FormCliente(() -> idUsuario, id -> {}));
+                frame.setSize(456, 600);
+                frame.setLocationRelativeTo(null);
+                frame.setVisible(true);
+                if (parentFrame != null) {
+                    parentFrame.dispose();
+                }
+            });
+        }
+    }
+}

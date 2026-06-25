@@ -12,8 +12,7 @@ import models.SubestacaoModelo;
 
 public class TabelaSubestacao extends JFrame {
 
-    private final SubestacaoFile subestacaoFile =
-            new SubestacaoFile(new SubestacaoModelo());
+    private final SubestacaoFile subestacaoFile = new SubestacaoFile(new SubestacaoModelo());
 
     private List<SubestacaoModelo> subestacao;
 

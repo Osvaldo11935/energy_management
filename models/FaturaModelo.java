@@ -1,13 +1,16 @@
 package models;
 
-import java.io.IOException;
-import java.io.RandomAccessFile;
-
+import java.io.*;
+import java.time.*;
 import SwingComponents.*;
+import modeloFiles.ContadorFile;
 import modeloFiles.CorteEnergiaFile;
 import modeloFiles.FaturaFile;
+import modeloFiles.LeituraConsumoFile;
+import modeloFiles.TarifaFile;
 import models.common.BaseModelo;
 import models.common.ModeloUtil;
+import utils.DataMapper;
 
 public class FaturaModelo  extends BaseModelo{
     private int clienteId;
@@ -34,8 +37,14 @@ public class FaturaModelo  extends BaseModelo{
  
     private StringBufferModelo status;
 
+    private StringBufferModelo numeroFatura;
+
     private int diasAtraso;
     
+    private TarifaModelo tarifa;
+    private ContadorModelo contador;
+    private LeituraConsumoModelo leitura;
+
     public FaturaModelo()
     {
         super();
@@ -47,14 +56,17 @@ public class FaturaModelo  extends BaseModelo{
         this.valorTotal = 0.0;
         this.valorMulta = 0.0;
         this.valorActualizado = 0.0;
-        this.dataEmissao = new DataModelo();
-        this.dataVencimento = new DataModelo();
-        this.dataPagamento = new DataModelo();
-        this.status = new StringBufferModelo( 20);
+        
+        this.dataEmissao = new DataModelo(DataMapper.normalizarData(LocalDate.now().toString()));
+        this.dataVencimento = new DataModelo(DataMapper.normalizarData(LocalDate.now().toString()));
+        this.dataPagamento = new DataModelo(DataMapper.normalizarData(LocalDate.now().toString()));
+
+        this.status = new StringBufferModelo(20);
         this.diasAtraso = 0;
+        this.numeroFatura = new StringBufferModelo(20);
     }
     public FaturaModelo(int id, int clienteId, int contadorId, int leituraId, int tarifaId, double consumoKwh, 
-        double valorTotal, double valorMulta, double valorActualizado, DataModelo dataEmissao, DataModelo dataVencimento,DataModelo dataPagamento, String status, int diasAtraso) {
+        double valorTotal, double valorMulta, double valorActualizado, String dataEmissao, String dataVencimento, String dataPagamento, String status, int diasAtraso, String numeroFatura) {
         super();
         setId(id);
         this.clienteId = clienteId;
@@ -65,11 +77,12 @@ public class FaturaModelo  extends BaseModelo{
         this.valorTotal = valorTotal;
         this.valorMulta = valorMulta;
         this.valorActualizado = valorActualizado;
-        this.dataEmissao = dataEmissao;
-        this.dataVencimento = dataVencimento;
-        this.dataPagamento = dataPagamento;
+        this.dataEmissao = new DataModelo(DataMapper.normalizarData(dataEmissao));
+        this.dataVencimento = new DataModelo(DataMapper.normalizarData(dataVencimento));
+        this.dataPagamento = new DataModelo(DataMapper.normalizarData(dataPagamento));
         this.status = new StringBufferModelo(status, 20);
         this.diasAtraso = diasAtraso;
+        this.numeroFatura = new StringBufferModelo(numeroFatura, 20);
     }
     
     public int getClienteId() {
@@ -111,6 +124,26 @@ public class FaturaModelo  extends BaseModelo{
     public int getDiasAtraso() {
         return diasAtraso;
     }
+
+    public String getNumeroFatura() {
+        return numeroFatura.toStringEliminatingSpaces();
+    }
+
+    public TarifaModelo getTarifa()
+    {
+        return TarifaFile.instaciar().obterPorId(getTarifaId());
+    }
+
+    public ContadorModelo getContador()
+    {
+        return ContadorFile.instaciar().obterPorId(getContadorId());
+    }
+
+    public LeituraConsumoModelo getLeituraConsumo()
+    {
+        return LeituraConsumoFile.instaciar().obterPorId(getLeituraId());
+    }
+
     public void setClienteId(int clienteId) {
         this.clienteId = clienteId;
     }
@@ -144,15 +177,15 @@ public class FaturaModelo  extends BaseModelo{
     }
 
     public void setDataEmissao(String dataEmissao) {
-        this.dataEmissao = new DataModelo(dataEmissao);
+        this.dataEmissao = new DataModelo(DataMapper.normalizarData(dataEmissao));
     }
 
     public void setDataVencimento(String dataVencimento) {
-        this.dataVencimento = new DataModelo(dataVencimento);
+        this.dataVencimento = new DataModelo(DataMapper.normalizarData(dataVencimento));
     }
 
     public void setDataPagamento(String dataPagamento) {
-        this.dataPagamento = new DataModelo(dataPagamento);
+        this.dataPagamento = new DataModelo(DataMapper.normalizarData(dataPagamento));
     }
 
     public void setStatus(String status) {
@@ -161,6 +194,10 @@ public class FaturaModelo  extends BaseModelo{
 
     public void setDiasAtraso(int diasAtraso) {
         this.diasAtraso = diasAtraso;
+    }
+
+    public void setNumeroFatura(String  numeroFatura) {
+        this.numeroFatura = new StringBufferModelo(numeroFatura, 20);
     }
     
     @Override
@@ -210,6 +247,7 @@ public class FaturaModelo  extends BaseModelo{
             dataPagamento.read(stream);;
             status.read(stream); 
             diasAtraso = stream.readInt();
+            numeroFatura.read(stream);
         }
         catch(IOException ex)
 		{
@@ -236,6 +274,7 @@ public class FaturaModelo  extends BaseModelo{
             dataPagamento.write(stream);
             status.write(stream); 
             stream.writeInt(diasAtraso);
+            numeroFatura.write(stream);
         }
         catch(IOException ex)
 		{

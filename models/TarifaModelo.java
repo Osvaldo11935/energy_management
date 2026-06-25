@@ -1,18 +1,23 @@
 package models;
 
 import java.io.*;
+import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.Date;
+
 import SwingComponents.*;
 import anotacoes.CampoFormulario;
 import anotacoes.TipoCampo;
 import modeloFiles.TarifaFile;
 import models.common.BaseModelo;
 import models.common.ModeloUtil;
+import utils.DataMapper;
 
 public class TarifaModelo extends BaseModelo {
     
     @CampoFormulario(
         descricao = "Nome da Tarifa",
-        largura = 200,
+        largura = 400,
         obrigatorio = true,
         linha = 1
     )
@@ -67,7 +72,7 @@ public class TarifaModelo extends BaseModelo {
         this.precoKwh = precoKwh;
         this.taxaFixa = taxaFixa;
         this.multaAtraso = multaAtraso;
-        this.dataVigor = new DataModelo(dataVigor);
+        this.dataVigor = new DataModelo(DataMapper.normalizarData(dataVigor));
     }
     
     public String getNomeTarifa() {
@@ -107,7 +112,7 @@ public class TarifaModelo extends BaseModelo {
     }
     
     public void setDataVigor(String dataVigor) {
-        this.dataVigor = new DataModelo(dataVigor);
+        this.dataVigor = new DataModelo(DataMapper.normalizarData(dataVigor));
     }
     
     @Override

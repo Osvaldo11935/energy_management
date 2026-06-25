@@ -68,9 +68,7 @@ public abstract class CrudFile<T extends BaseModelo> extends ObjectsFile {
 
                 obj.read(stream);
 
-                if (
-                        obj.isActivo()) {
-
+                if (obj.isActivo()) {
                     lista.add(obj);
                 }
             }

@@ -4,6 +4,7 @@ import java.awt.*;
 import javax.swing.*;
 import models.LoginModelo;
 import models.UsuarioModelo;
+import utils.Session;
 
 public class FormLogin extends JFrame {
 
@@ -30,9 +31,10 @@ public class FormLogin extends JFrame {
             LoginModelo login = (LoginModelo) obj;
 
             UsuarioModelo usuario = login.login();
-
+            
             if (usuario != null) {
-                SwingUtilities.invokeLater(() -> {new MenuPrincipal(2).setVisible(true);});
+                Session.setUsuario(usuario);
+                SwingUtilities.invokeLater(() -> {new MenuPrincipal().setVisible(true);});
                 this.dispose(); 
             } else {
                 JOptionPane.showMessageDialog(this,

@@ -3,6 +3,7 @@ package telas;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import javax.swing.*;
@@ -11,7 +12,7 @@ import models.ClienteModelo;
 
 public class FormCliente extends JPanel {
     private Supplier<String> idUsuarioProvider;
-    public FormCliente(Supplier<String> idUsuarioProvider) {
+    public FormCliente(Supplier<String> idUsuarioProvider, Consumer<String> aoSalvarCallback) {
         this.idUsuarioProvider = idUsuarioProvider;
         setLayout(new BorderLayout());
         setPreferredSize(new Dimension(450, 456));
@@ -25,12 +26,11 @@ public class FormCliente extends JPanel {
             int novoId = (clientes == null || clientes.isEmpty())? 1: clientes.getLast().getId() + 1;
 
             String idUsuario = this.idUsuarioProvider.get();
-
             ClienteModelo novoCliente = new ClienteModelo(
                 novoId,
                 Integer.parseInt(idUsuario),
-                formDados.getTipoContrato(),
                 formDados.getTipoCliente(),
+                formDados.getTipoContrato(),
                 formDados.getAreaDistribuicaoId(),
                 0.0,
                 0.0,
@@ -39,6 +39,11 @@ public class FormCliente extends JPanel {
             );
 
             novoCliente.salvarDados();
+            String idGerado = String.valueOf(novoCliente.getId());
+
+            if (aoSalvarCallback != null) {
+                aoSalvarCallback.accept(idGerado);
+            }
 
             JOptionPane.showMessageDialog(this, novoCliente.toString());
         });
@@ -75,6 +80,6 @@ public class FormCliente extends JPanel {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new FormCliente(()-> "").setVisible(true));
+        SwingUtilities.invokeLater(() -> new FormCliente(()-> "", id ->{}).setVisible(true));
     }
 }

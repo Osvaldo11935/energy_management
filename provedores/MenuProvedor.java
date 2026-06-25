@@ -15,7 +15,7 @@ public class MenuProvedor  implements ComboDadosProvedor {
                                      .listar();
                         
         return menus.stream()
-                     .map(e-> new ComboItem(e.getId(), e.getNome()))
+                     .map(e-> new ComboItem(e.getId(), e.getMenuPaiId() > 0 ? e.getMenuPai().getNome() +" - "+  e.getNome() : e.getNome()))
                      .toList();
     }
 }

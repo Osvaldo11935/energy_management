@@ -1,6 +1,8 @@
 package models;
 
 import java.io.*;
+import java.time.LocalDate;
+
 import SwingComponents.*;
 import anotacoes.CampoFormulario;
 import anotacoes.TipoCampo;
@@ -12,6 +14,7 @@ import modeloFiles.UsuarioFile;
 import models.common.BaseModelo;
 import models.common.ModeloUtil;
 import provedores.AreaDistribuicaoProvedor;
+import utils.DataMapper;
 
 public class ClienteModelo extends BaseModelo {
 
@@ -58,7 +61,7 @@ public class ClienteModelo extends BaseModelo {
     private StringBufferModelo observacoes;
 
     private AreaDistribuicaoModelo areaDistribuicao;
-
+    private UsuarioModelo usuario;
     public ClienteModelo()
     {
         super();
@@ -72,7 +75,7 @@ public class ClienteModelo extends BaseModelo {
         this.limiteConsumoMensal = 0.0;
         this.observacoes = new StringBufferModelo(100);
     }
-    public ClienteModelo(int id, int usuarioId, String tipoContrato, String tipoCliente, int areaDistribuicaoId, double saldoDevedor, 
+    public ClienteModelo(int id, int usuarioId, String tipoCliente, String tipoContrato, int areaDistribuicaoId, double saldoDevedor, 
         double creditoDisponivel, double limiteConsumoMensal, String observacoes) {
         super();
         setId(id);
@@ -80,7 +83,7 @@ public class ClienteModelo extends BaseModelo {
         this.tipoCliente = new StringBufferModelo(tipoCliente, 30);
         this.tipoContrato = new StringBufferModelo(tipoContrato, 30);
         this.areaDistribuicaoId = areaDistribuicaoId;
-        this.dataCadastro = new DataModelo();
+        this.dataCadastro = new DataModelo(DataMapper.normalizarData(LocalDate.now().toString()));
         this.saldoDevedor = saldoDevedor;
         this.creditoDisponivel = creditoDisponivel;
         this.limiteConsumoMensal = limiteConsumoMensal;
@@ -114,9 +117,12 @@ public class ClienteModelo extends BaseModelo {
         return observacoes.toStringEliminatingSpaces();
     }
     public AreaDistribuicaoModelo getAreaDistribuicao() {
-        return new AreaDistribuicaoFile(new AreaDistribuicaoModelo()).obterPorId(getAreaDistribuicaoId());
+        return AreaDistribuicaoFile.instaciar().obterPorId(getAreaDistribuicaoId());
     }
-    
+
+    public UsuarioModelo getUsuario() {
+        return UsuarioFile.instaciar().obterPorId(getUsuarioId());
+    }
     public void setUsuarioId(int usuarioId) {
         this.usuarioId = usuarioId;
     }
@@ -156,6 +162,7 @@ public class ClienteModelo extends BaseModelo {
         str += "ID: "+ getId() + "\n";
         str += "UsuarioID: "+ getUsuarioId() + "\n";
         str += "Tipo Cliente: "+ getTipoCliente() + "\n";
+        str += "Tipo Contrato: "+ getTipoContrato() + "\n";
         str += "AreaDistribuicao: "+ getAreaDistribuicaoId() + "\n";
         str += "Data Do Cadastro: "+ getDataCadastro() + "\n";
         str += "Saldo Devedor: "+ getSaldoDevedor() + "\n";
@@ -179,6 +186,7 @@ public class ClienteModelo extends BaseModelo {
             readBase(stream);
             usuarioId = stream.readInt();
             tipoCliente.read(stream);
+            tipoContrato.read(stream);
             areaDistribuicaoId = stream.readInt();
             dataCadastro.read(stream);;
             saldoDevedor = stream.readDouble();
@@ -200,6 +208,7 @@ public class ClienteModelo extends BaseModelo {
             writeBase(stream);
             stream.writeInt(usuarioId);
             tipoCliente.write(stream);
+            tipoContrato.write(stream);
             stream.writeInt(areaDistribuicaoId);
             dataCadastro.write(stream);
             stream.writeDouble(saldoDevedor);

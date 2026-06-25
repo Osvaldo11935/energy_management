@@ -70,6 +70,7 @@ public class MenuModelo extends BaseModelo {
         linha = 5
     )
     private int nivelMinimoAcesso;
+    private MenuModelo menuPai;
 
     public MenuModelo()
     {
@@ -121,6 +122,12 @@ public class MenuModelo extends BaseModelo {
     public int getNivelMinimoAcesso() {
         return nivelMinimoAcesso;
     }
+
+    public MenuModelo getMenuPai()
+    {
+       return MenuFile.instaciar().obterPorId(getMenuPaiId());
+    }
+
     public void setMenuPaiId(int menuPaiId) {
         this.menuPaiId = menuPaiId;
     }

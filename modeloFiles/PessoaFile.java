@@ -37,5 +37,8 @@ public class PessoaFile  extends CrudFile<PessoaModelo> {
 
         return null;
     }
-
+    public static  PessoaFile instaciar()
+    {
+        return new  PessoaFile(new  PessoaModelo());
+    }
 }

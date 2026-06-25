@@ -6,7 +6,9 @@ import enums.*;
 import modeloFiles.PessoaFile;
 import models.common.BaseModelo;
 import models.common.ModeloUtil;
+import utils.DataMapper;
 import SwingComponents.*;
+
 
 import java.io.*;
 
@@ -122,13 +124,13 @@ public class PessoaModelo  extends BaseModelo {
         this.nomeCompleto = new StringBufferModelo(nomeCompleto, 50);
         this.nomePai = new StringBufferModelo(nomePai, 50);
         this.nomeMae = new StringBufferModelo(nomeMae, 50);
-        this.dataNascimento = new DataModelo(dataNascimento);
+        this.dataNascimento = new DataModelo(DataMapper.normalizarData(dataNascimento));
         this.estadoCivil = new StringBufferModelo(estadoCivil, 10);
         this.genero = new StringBufferModelo(genero, 10);
         this.residencia = new StringBufferModelo(residencia, 100);
         this.naturalidade = new StringBufferModelo(naturalidade, 50);
-        this.documentoEmitidoEm = new DataModelo(documentoEmitidoEm);
-        this.documentoValidoAte = new DataModelo(documentoValidoAte);
+        this.documentoEmitidoEm = new DataModelo(DataMapper.normalizarData(documentoEmitidoEm));
+        this.documentoValidoAte = new DataModelo(DataMapper.normalizarData(documentoValidoAte));
         this.altura = new StringBufferModelo(altura, 5);
         this.usuarioId = usuarioId;
     }
@@ -202,7 +204,7 @@ public class PessoaModelo  extends BaseModelo {
     }
 
     public void setDataNascimento(String dataNascimento) {
-        this.dataNascimento = new DataModelo(dataNascimento);
+        this.dataNascimento = new DataModelo(DataMapper.normalizarData(dataNascimento));
     }
 
     public void setEstadoCivil(String estadoCivil) {
@@ -222,11 +224,11 @@ public class PessoaModelo  extends BaseModelo {
     }
 
     public void setDocumentoEmitidoEm(String documentoEmitidoEm) {
-        this.documentoEmitidoEm = new DataModelo(documentoEmitidoEm);
+        this.documentoEmitidoEm = new DataModelo(DataMapper.normalizarData(documentoEmitidoEm));
     }
 
     public void setDocumentoValidoAte(String documentoValidoAte) {
-        this.documentoValidoAte = new DataModelo(documentoValidoAte);
+        this.documentoValidoAte = new DataModelo(DataMapper.normalizarData(documentoValidoAte));
     }
 
     public void setAltura(String altura) {

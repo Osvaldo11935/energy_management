@@ -2,12 +2,16 @@ package models;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.time.LocalDate;
 
 import SwingComponents.*;
+import enums.EstadoCorteEnergia;
+import modeloFiles.ClienteFile;
 import modeloFiles.ContadorFile;
 import modeloFiles.CorteEnergiaFile;
 import models.common.BaseModelo;
 import models.common.ModeloUtil;
+import utils.DataMapper;
 
 public class CorteEnergiaModelo extends BaseModelo {
     private int clienteId;
@@ -16,7 +20,7 @@ public class CorteEnergiaModelo extends BaseModelo {
     private DataModelo dataInicio;
     private DataModelo dataFim;
     private StringBufferModelo status;
-
+    private ClienteModelo cliente;
     public CorteEnergiaModelo()
     {
        super();
@@ -28,17 +32,16 @@ public class CorteEnergiaModelo extends BaseModelo {
        status = new StringBufferModelo(30);
     }
 
-    public CorteEnergiaModelo(int id, int clienteId, int areaId, String motivo, 
-        String dataInicio, String dataFim, String status)
+    public CorteEnergiaModelo(int id, int clienteId, String motivo)
     {
        super();
        setId(id);
        this.clienteId = clienteId;
-       this.areaId = areaId;
+       this.areaId = 0;
        this.motivo = new StringBufferModelo(motivo,100);
-       this.dataInicio = new DataModelo(dataInicio);
-       this.dataFim = new DataModelo(dataFim);
-       this.status = new StringBufferModelo(status,30);
+       this.dataInicio = new DataModelo(DataMapper.normalizarData(LocalDate.now().toString()));
+       this.dataFim = new DataModelo(DataMapper.normalizarData(LocalDate.now().toString()));
+       this.status = new StringBufferModelo(EstadoCorteEnergia.PENDENTE.toString(), 30);
     }
     public int getClienteId() {
         return clienteId;
@@ -58,6 +61,10 @@ public class CorteEnergiaModelo extends BaseModelo {
     public String getStatus() {
         return status.toStringEliminatingSpaces();
     }
+    public ClienteModelo getCliente()
+    {
+        return ClienteFile.instaciar().obterPorId(getClienteId());
+    }
     public void setClienteId(int clienteId) {
         this.clienteId = clienteId;
     }
@@ -70,10 +77,10 @@ public class CorteEnergiaModelo extends BaseModelo {
         this.motivo = new StringBufferModelo(motivo, 100);
     }
     public void setDataInicio(String dataInicio) {
-        this.dataInicio =  new DataModelo(dataInicio);
+        this.dataInicio =  new DataModelo(DataMapper.normalizarData(dataInicio));
     }
     public void setDataFim(String dataFim) {
-        this.dataFim = new DataModelo(dataFim);
+        this.dataFim = new DataModelo(DataMapper.normalizarData(dataFim));
     }
 
     public void setStatus(String status) {

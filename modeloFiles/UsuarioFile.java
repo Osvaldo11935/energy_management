@@ -44,4 +44,9 @@ public class UsuarioFile extends CrudFile<UsuarioModelo> {
 
         return null;
     }
+   
+    public static  UsuarioFile instaciar()
+    {
+        return new  UsuarioFile(new  UsuarioModelo());
+    }
 }

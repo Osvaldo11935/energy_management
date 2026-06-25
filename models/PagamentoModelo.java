@@ -1,12 +1,15 @@
 package models;
 
 import java.io.*;
+import java.time.LocalDate;
+
 import SwingComponents.*;
 import anotacoes.CampoFormulario;
 import anotacoes.TipoCampo;
 import modeloFiles.PagamentoFile;
 import models.common.BaseModelo;
 import models.common.ModeloUtil;
+import utils.DataMapper;
 
 public class PagamentoModelo extends BaseModelo {
 
@@ -89,7 +92,7 @@ public class PagamentoModelo extends BaseModelo {
         this.clienteId = clienteId;
         this.valorPago = valorPago;
         this.valorMultaPaga = valorMultaPaga;
-        this.dataPagamento = new DataModelo();
+        this.dataPagamento = new DataModelo(DataMapper.normalizarData(LocalDate.now().toString()));
         this.metodoPagamento = new StringBufferModelo(metodoPagamento, 20);
         this.referenciaTransacao = new StringBufferModelo(referenciaTransacao, 15);
         this.status = new StringBufferModelo(status, 15);

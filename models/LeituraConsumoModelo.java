@@ -1,6 +1,8 @@
 package models;
 
 import java.io.*;
+import java.time.LocalDate;
+
 import SwingComponents.*;
 import anotacoes.CampoFormulario;
 import anotacoes.TipoCampo;
@@ -8,6 +10,7 @@ import modeloFiles.LeituraConsumoFile;
 import models.common.BaseModelo;
 import models.common.ModeloUtil;
 import provedores.UsuarioProvedor;
+import utils.DataMapper;
 
 
 public class LeituraConsumoModelo extends BaseModelo {
@@ -72,7 +75,6 @@ public class LeituraConsumoModelo extends BaseModelo {
     )
     private int responsavelLeituraId;
 
-    // Construtores
     public LeituraConsumoModelo() {
         super();
         this.contadorId = 0;
@@ -85,18 +87,16 @@ public class LeituraConsumoModelo extends BaseModelo {
         this.responsavelLeituraId = 0;
     }
 
-    public LeituraConsumoModelo(int id, int contadorId, double leituraAnterior, double leituraActual, 
-                                double consumoKwh, String periodoInicio, String periodoFim, 
-                                String dataLeitura, int responsavelLeituraId) {
+    public LeituraConsumoModelo(int id, int contadorId, double leituraAnterior, double leituraActual, String periodoInicio, String periodoFim,  int responsavelLeituraId) {
         super();
         setId(id);
         this.contadorId = contadorId;
         this.leituraAnterior = leituraAnterior;
         this.leituraActual = leituraActual;
-        this.consumoKwh = consumoKwh;
-        this.periodoInicio = new DataModelo(periodoInicio);
-        this.periodoFim = new DataModelo(periodoFim);
-        this.dataLeitura = new DataModelo(dataLeitura);
+        this.consumoKwh = leituraAnterior - leituraActual;
+        this.periodoInicio = new DataModelo(DataMapper.normalizarData(periodoInicio));
+        this.periodoFim = new DataModelo(DataMapper.normalizarData(periodoFim));
+        this.dataLeitura = new DataModelo(DataMapper.normalizarData(LocalDate.now().toString()));
         this.responsavelLeituraId = responsavelLeituraId;
     }
 
@@ -149,15 +149,15 @@ public class LeituraConsumoModelo extends BaseModelo {
     }
 
     public void setPeriodoInicio(String periodoInicio) {
-        this.periodoInicio = new DataModelo(periodoInicio);
+        this.periodoInicio = new DataModelo(DataMapper.normalizarData(periodoInicio));
     }
 
     public void setPeriodoFim(String periodoFim) {
-        this.periodoFim = new DataModelo(periodoFim);
+        this.periodoFim = new DataModelo(DataMapper.normalizarData(periodoFim));
     }
 
     public void setDataLeitura(String dataLeitura) {
-        this.dataLeitura = new DataModelo(dataLeitura);
+        this.dataLeitura = new DataModelo(DataMapper.normalizarData(dataLeitura));
     }
 
     public void setResponsavelLeitura(int responsavelLeituraId) {

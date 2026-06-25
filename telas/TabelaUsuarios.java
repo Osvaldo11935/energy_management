@@ -1,23 +1,17 @@
 package telas;
 
-import models.PessoaModelo;
 import models.UsuarioModelo;
-import modeloFiles.PessoaFile;
 import modeloFiles.UsuarioFile;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.util.List;
 
 public class TabelaUsuarios extends JFrame {
 
     private final UsuarioFile usuarioFile =
             new UsuarioFile(new UsuarioModelo());
-
-    private final PessoaFile pessoaFile =
-            new PessoaFile(new PessoaModelo());
 
     private List<UsuarioModelo> usuarios;
 
@@ -79,9 +73,7 @@ public class TabelaUsuarios extends JFrame {
     private List<TabelaGerador.AcaoTabela> criarAcoes() {
 
         return List.of(
-
                 new TabelaGerador.AcaoTabela() {
-
                     @Override
                     public String getNome() {
                         return "Editar";
@@ -160,94 +152,17 @@ public class TabelaUsuarios extends JFrame {
                         }
                     }
                 },
-
                 new TabelaGerador.AcaoTabela() {
-
-                    @Override
-                    public String getNome() {
-                        return "Adicionar Dados Pessoais";
-                    }
-
-                    @Override
-                    public void executar(
-                            int linha,
-                            Object[] dadosLinha
-                    ) {
-
-                        int id =
-                                getId(dadosLinha);
-
-                        PessoaModelo pessoa =
-                                pessoaFile
-                                        .buscarPorUsuarioId(id);
-
-                        if (pessoa != null) {
-
-                            JOptionPane.showMessageDialog(
-                                    TabelaUsuarios.this,
-                                    "Usuário já tem dados pessoais cadastrados"
-                            );
-
-                            return;
-                        }
-
-                        FormWindow tela =
-                                new FormWindow(
-                                        "Dados Pessoais",
-                                        456,
-                                        510,
-                                        new FormPessoa(
-                                                () -> String.valueOf(id)
-                                        )
-                                );
-
-                        tela.addWindowListener(
-                                new WindowAdapter() {
-
-                                    @Override
-                                    public void windowClosed(
-                                            WindowEvent e
-                                    ) {
-                                        carregarTabela();
-                                    }
-                                }
-                        );
-
-                        tela.setVisible(true);
-                    }
-                },
-
-                new TabelaGerador.AcaoTabela() {
-
                     @Override
                     public String getNome() {
                         return "Detalhe";
                     }
 
                     @Override
-                    public void executar(
-                            int linha,
-                            Object[] dadosLinha
-                    ) {
+                    public void executar(int linha, Object[] dadosLinha) {
 
-                        int id =
-                                getId(dadosLinha);
-
-                        PessoaModelo pessoa =
-                                pessoaFile
-                                        .buscarPorUsuarioId(id);
-
-                        if (pessoa == null) {
-
-                            JOptionPane.showMessageDialog(
-                                    TabelaUsuarios.this,
-                                    "Usuário sem dados pessoais. Cadastre primeiro."
-                            );
-
-                            return;
-                        }
-
-                        SwingUtilities.invokeLater(() ->new DetalhePessoa(() -> String.valueOf(id)).setVisible(true));
+                        int id = getId(dadosLinha);
+                        SwingUtilities.invokeLater(() ->new DetalheUsuario(() -> String.valueOf(id)).setVisible(true));
                     }
                 }
         );

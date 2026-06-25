@@ -2,22 +2,27 @@ package telas;
 
 import anotacoes.*;
 import enums.DefaultEnum;
+import utils.Session;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
 import java.awt.*;
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class FormGerador extends JPanel {
 
         private final Class<?> clazz;
         private final Object instanciaInicial;
-
+        private final Map<String, List<ComboItem>> dadosCombos = new HashMap<>();
         private final Map<String, JComponent> campos = new HashMap<>();
         private final Map<String, CampoFormulario> metadados = new HashMap<>();
         private final Map<Integer, JPanel> linhas = new HashMap<>();
-
+        private final Map<String, List<String>> dependencias = new HashMap<>();
         private final JPanel formulario = new JPanel();
 
         private final Map<String, Consumer<Object>> acoesBotoes = new HashMap<>();
@@ -61,7 +66,11 @@ public class FormGerador extends JPanel {
                         metadados.put(field.getName(), meta);
 
                         JPanel campoPanel = criarCampoFormulario(field, meta);
-
+                        if (!meta.dependeDe().isEmpty()) {
+                                dependencias
+                                        .computeIfAbsent(meta.dependeDe(), k -> new ArrayList<>())
+                                        .add(field.getName());
+                        }
                         int linha = meta.linha();
                         if (linha == -1) {
                                 linha = linhas.size();
@@ -170,7 +179,17 @@ public class FormGerador extends JPanel {
 
                         JComboBox<ComboItem> combo = new JComboBox<>();
 
+                        if (!meta.dependeDe().isEmpty()) {
+                            combo.setEnabled(false);
+                        }
+
+                        if (meta.pesquisavel()) {
+                        habilitarPesquisa(
+                                field.getName(),
+                                combo);
+                        }
                         try {
+                                List<ComboItem> itens = new ArrayList<>();
                                 combo.setPreferredSize(new Dimension(meta.largura(), meta.altura()));
                                 combo.setMinimumSize(new Dimension(meta.largura(), meta.altura()));
                                 combo.setMaximumSize(new Dimension(meta.largura(), meta.altura()));
@@ -178,27 +197,41 @@ public class FormGerador extends JPanel {
 
                                         ComboDadosProvedor provider = meta.provider().getDeclaredConstructor()
                                                         .newInstance();
-
-                                        for (ComboItem item : provider.carregar()) {
+                                        itens = provider.carregar();
+                                        for (ComboItem item : itens) {
                                                 combo.addItem(item);
                                         }
-
                                 } 
                                 else if (meta.enumType() != DefaultEnum.class) {
                                         Class<? extends Enum> enumClass = (Class<? extends Enum>) meta.enumType();
 
                                         for (Enum<?> e : enumClass.getEnumConstants()) {
-                                                combo.addItem(new ComboItem(e.name(), formatEnum(e.name())));
+                                                ComboItem item = new ComboItem(e.name(), formatEnum(e.name()));
+                                                itens.add(item);
+                                                combo.addItem(item);
                                         }
+
+                                        carregarCombo(field.getName(),combo, itens);
                                 }
                                 else {
 
                                         for (String opcao : meta.opcoes()) {
-                                                combo.addItem(new ComboItem(null, opcao));
+                                                ComboItem item = new  ComboItem(null, opcao);
+                                                itens.add(item);
+                                                combo.addItem(item);
                                         }
                                 }
-                        
+                               
+                                combo.addActionListener(e -> {
+                                        ComboItem selecionado = (ComboItem) combo.getSelectedItem();
 
+                                        if (selecionado == null)
+                                                return;
+                                        
+                                        Session.setDadoCombo(field.getName(), selecionado.getId() != null ? selecionado.getId() : selecionado.getDescricao().trim());
+                                        atualizarDependentes(field.getName());
+                                });
+                               carregarCombo(field.getName(),combo, itens);
                         } catch (Exception e) {
                                 e.printStackTrace();
                         }
@@ -250,6 +283,7 @@ public class FormGerador extends JPanel {
                         if (selecionado instanceof ComboItem item) {
                                 return item.getId() != null ? item.getId() : item.getDescricao().trim();
                         }
+                        
                         return selecionado;
                 }
                 return null;
@@ -277,13 +311,12 @@ public class FormGerador extends JPanel {
 
                         if (meta.obrigatorio()) {
 
-                                boolean vazio = valor == null ||
-                                                valor.toString().trim().isEmpty();
+                                boolean vazio = valor == null || valor.toString().trim().isEmpty();
 
                                 if (vazio) {
                                         erros.append("- ")
-                                                        .append(meta.descricao())
-                                                        .append("\n");
+                                             .append(meta.descricao())
+                                             .append("\n");
                                 }
                         }
                 }
@@ -362,12 +395,7 @@ public class FormGerador extends JPanel {
 
                                 } catch (NoSuchMethodException e) {
                                         try {
-
-                                                clazz.getMethod(
-                                                                setter,
-                                                                String.class).invoke(
-                                                                                instancia,
-                                                                                valor.toString());
+                                                clazz.getMethod(setter, String.class).invoke(instancia,valor.toString());
 
                                         } catch (Exception ignored) {
                                         }
@@ -405,5 +433,120 @@ public class FormGerador extends JPanel {
                 String texto = valor.toLowerCase().replace("_", " ");
                 return Character.toUpperCase(texto.charAt(0))
                         + texto.substring(1);
+        }
+        private void atualizarDependentes(String campoPai) {
+
+                List<String> filhos = dependencias.get(campoPai);
+
+                if (filhos == null)
+                        return;
+
+                for (String campoFilho : filhos) {
+
+                        JComboBox<ComboItem> comboFilho = (JComboBox<ComboItem>)campos.get(campoFilho);
+
+                        comboFilho.removeAllItems();
+
+                        try {
+
+                        Field fieldFilho = clazz.getDeclaredField(campoFilho);
+
+                        CampoFormulario meta = fieldFilho.getAnnotation(CampoFormulario.class);
+
+                        ComboDadosProvedor provider =
+                                meta.provider()
+                                        .getDeclaredConstructor()
+                                        .newInstance();
+
+                        for (ComboItem item :
+                                provider.carregar()) {
+
+                                comboFilho.addItem(item);
+                        }
+
+                        comboFilho.setEnabled(true);
+
+                        } catch (Exception ex) {
+
+                        ex.printStackTrace();
+                        }
+                }
+        }
+
+        private void habilitarPesquisa(String nomeCampo, JComboBox<ComboItem> combo) {
+
+                combo.setEditable(true);
+
+                JTextField editor =
+                        (JTextField) combo
+                                .getEditor()
+                                .getEditorComponent();
+
+                editor.getDocument()
+                        .addDocumentListener(new DocumentListener() {
+
+                        private void pesquisar() {
+
+                        SwingUtilities.invokeLater(() -> {
+
+                                String texto =
+                                        editor.getText()
+                                        .toLowerCase()
+                                        .trim();
+
+                                List<ComboItem> itens =
+                                        dadosCombos
+                                                .getOrDefault(
+                                                        nomeCampo,
+                                                        Collections.emptyList());
+
+                                combo.removeAllItems();
+
+                                for (ComboItem item : itens) {
+
+                                if (texto.isEmpty()
+                                        || item.getDescricao()
+                                                .toLowerCase()
+                                                .contains(texto)) {
+
+                                        combo.addItem(item);
+                                }
+                                }
+
+                                editor.setText(texto);
+
+                                if (combo.getItemCount() > 0) {
+                                combo.showPopup();
+                                }
+                        });
+                        }
+
+                        @Override
+                        public void insertUpdate(DocumentEvent e) {
+                        pesquisar();
+                        }
+
+                        @Override
+                        public void removeUpdate(DocumentEvent e) {
+                        pesquisar();
+                        }
+
+                        @Override
+                        public void changedUpdate(DocumentEvent e) {
+                        pesquisar();
+                        }
+                });
+        }
+        private void carregarCombo(String nomeCampo, JComboBox<ComboItem> combo, List<ComboItem> itens) {
+
+                dadosCombos.put(nomeCampo, new ArrayList<>(itens));
+
+                combo.removeAllItems();
+
+                for (ComboItem item : itens) {
+                        combo.addItem(item);
+                }
+
+                combo.setSelectedIndex(-1);
         }
 }

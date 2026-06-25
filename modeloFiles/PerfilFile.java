@@ -14,4 +14,9 @@ public class PerfilFile  extends CrudFile<PerfilModelo> {
     {
         super(System.getProperty("user.dir")+ "/data/Perfil.DAT", model, PerfilModelo.class);
     }
+
+    public static  PerfilFile instaciar()
+    {
+        return new  PerfilFile(new  PerfilModelo());
+    }
 }

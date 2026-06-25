@@ -7,8 +7,8 @@ import javax.swing.*;
 import modeloFiles.common.CrudFile;
 import models.MenuModelo;
 import models.PerfilMenuModelo;
-import models.PerfilModelo;
-import models.PessoaModelo;
+
+
 public class PerfilMenuFile extends CrudFile<PerfilMenuModelo> {
 
     public PerfilMenuFile(PerfilMenuModelo model) {
@@ -43,5 +43,9 @@ public class PerfilMenuFile extends CrudFile<PerfilMenuModelo> {
         }
 
         return lista;
+    }
+    public static  PerfilMenuFile instaciar()
+    {
+        return new  PerfilMenuFile(new  PerfilMenuModelo());
     }
 }

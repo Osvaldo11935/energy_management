@@ -45,41 +45,46 @@ public class SeedData {
 
     private static void criarMenus() {
 
-        MenuFile file =
-                new MenuFile(
-                        new MenuModelo());
+        MenuFile file = new MenuFile(new MenuModelo());
 
         if (!file.listar().isEmpty())
             return;
 
-        MenuModelo menuCadastros = new MenuModelo(1,0,"CAD","Cadastros","Menu principal","","",1,1);
+        new MenuModelo(2, 0, "USR", "Usuários", "", "funcionario32.png", "", 1, 1).salvarDados();
 
-        menuCadastros.salvarDados();
+        new MenuModelo(20, 2, "USR_NEW", "Novo", "", "", "telas.FormWizard", 1, 1).salvarDados();
+        new MenuModelo(21, 2, "USR_LIST", "Pesquisar", "", "", "telas.TabelaUsuarios", 2, 1).salvarDados();
 
-        MenuModelo menuUsuarios =
-                new MenuModelo(2, 1,"USR","Usuários","Gestão de usuários","","telas.TabelaUsuarios",1,1);
+        new MenuModelo(3, 0, "PER", "Perfis", "", "funcionario32.png", "", 2, 1).salvarDados();
 
-        menuUsuarios.salvarDados();
+        new MenuModelo(30, 3, "PER_NEW", "Novo", "", "", "telas.FormPerfil", 1, 1).salvarDados();
+        new MenuModelo(31, 3, "PER_LIST", "Pesquisar", "", "", "telas.TabelaPerfil", 2, 1).salvarDados();
 
-        MenuModelo menuPerfis =
-                new MenuModelo(3,1,"PER","Perfis","Gestão de perfis","","telas.TabelaPerfil",2,1);
- 
-        menuPerfis.salvarDados();
+        new MenuModelo(5, 0, "CLI", "Clientes", "", "funcionario32.png", "", 3, 1).salvarDados();
 
-        MenuModelo menuPerfilMenu =
-                new MenuModelo(4,1,"REL","Relacionar Menus","Permissões","","telas.TabelaPerfilMenu",3,1);
+        new MenuModelo(50, 5, "CLI_NEW", "Novo", "", "", "telas.FormCliente", 1, 1).salvarDados();
+        new MenuModelo(51, 5, "CLI_LIST", "Pesquisar", "", "", "telas.TabelaClientes", 2, 1).salvarDados();
 
-        menuPerfilMenu.salvarDados();
+        new MenuModelo(6, 0, "MEN", "Menus", "", "funcionario32.png", "", 4, 1).salvarDados();
 
-        MenuModelo menuClientes =
-                new MenuModelo(5,1,"CLI","Clientes","Cadastro clientes","","telas.TabelaClientes",4,1);
+        new MenuModelo(60, 6, "MEN_NEW", "Novo", "", "", "telas.FormMenu", 1, 1).salvarDados();
+        new MenuModelo(61, 6, "MEN_LIST", "Pesquisar", "", "", "telas.TabelaMenu", 2, 1).salvarDados();
+        new MenuModelo(62, 6, "MEN_PER_LIST", "Perfil Menu", "", "", "telas.TabelaPerfilMenu", 2, 1).salvarDados();
 
-        menuClientes.salvarDados();
-        
-        MenuModelo menuMenu =
-                new MenuModelo(6,1,"MEN","Menus","Gestão de menus","","telas.TabelaMenu",5,1);
+        MenuModelo rede = new MenuModelo(10,0,"RED","Gestão de Rede Elétrica","","funcionario32.png","",10,1);
+        rede.salvarDados();
 
-        menuMenu.salvarDados();
+        MenuModelo sub = new MenuModelo(7,10,"SUB","Subestações","", "","",1,1);
+        sub.salvarDados();
+
+        new MenuModelo( 70,7,"SUB_NEW","Novo","","","telas.FormSubestacao",1,1).salvarDados();
+        new MenuModelo(71,7, "SUB_LIST","Pesquisar", "","","telas.TabelaSubestacao",2,1).salvarDados();
+
+        MenuModelo area =new MenuModelo(8,10,"ARE","Área Distribuição","","","", 2,1);
+        area.salvarDados();
+
+        new MenuModelo( 80, 8,"ARE_NEW","Novo","", "","telas.FormAreaDistribuicao",1,1).salvarDados();
+        new MenuModelo( 81, 8,"ARE_LIST", "Pesquisar","","","telas.TabelaAreaDistribuicao",2,1).salvarDados();
     }
 
     private static void relacionarMenusPerfil() {

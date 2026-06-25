@@ -12,4 +12,9 @@ public class SubestacaoFile extends CrudFile<SubestacaoModelo> {
     {
         super(System.getProperty("user.dir")+ "/data/Subestacao.DAT", model, SubestacaoModelo.class);
     }
+
+    public static  SubestacaoFile instaciar()
+    {
+        return new  SubestacaoFile(new  SubestacaoModelo());
+    }
 }

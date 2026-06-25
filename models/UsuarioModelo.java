@@ -9,7 +9,6 @@ import models.common.ModeloUtil;
 import provedores.PerfilProvedor;
 import SwingComponents.*;
 
-
 import javax.swing.*;
 
 import java.io.*;
@@ -127,6 +126,16 @@ public class UsuarioModelo extends BaseModelo{
         this.perfilId = perfilId;
     }
     
+    public boolean ehCliente()
+    {
+        return getPerfil().getNome().toLowerCase().equals("cliente");
+    }
+
+    public boolean ehTecnico()
+    {
+        return getPerfil().getNome().toLowerCase().equals("tecnico");
+    }
+
     @Override
     public String toString()
     {
