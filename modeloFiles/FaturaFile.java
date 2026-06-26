@@ -6,11 +6,11 @@ import java.time.format.DateTimeFormatter;
 import javax.swing.*;
 import java.util.*;
 import SwingComponents.*;
-import enums.EstadoFatura;
+import enums.EstadoFaturaEnum;
 import modeloFiles.common.CrudFile;
-import models.ClienteModelo;
-import models.ContadorModelo;
-import models.FaturaModelo;
+import modelos.ClienteModelo;
+import modelos.ContadorModelo;
+import modelos.FaturaModelo;
 
 public class FaturaFile extends CrudFile<FaturaModelo> {
 
@@ -69,9 +69,9 @@ public class FaturaFile extends CrudFile<FaturaModelo> {
 
                 fatura.read(stream);
                 
-                boolean naoPaga = !EstadoFatura.PAGO.toString().equals(fatura.getStatus());
+                boolean naoPaga = !EstadoFaturaEnum.PAGO.toString().equals(fatura.getStatus());
 
-                boolean naoCancelada = !EstadoFatura.CANCELADO.toString().equals(fatura.getStatus());
+                boolean naoCancelada = !EstadoFaturaEnum.CANCELADO.toString().equals(fatura.getStatus());
                 
                 if (naoPaga && naoCancelada && fatura.isActivo() && fatura.getId() > 0) {
                     LocalDate vencimento = LocalDate.parse(fatura.getDataVencimento(), formato);
@@ -96,7 +96,7 @@ public class FaturaFile extends CrudFile<FaturaModelo> {
 
         for (FaturaModelo f : listar()) {
 
-            boolean naoPaga = !EstadoFatura.PAGO.toString().equals(f.getStatus());
+            boolean naoPaga = !EstadoFaturaEnum.PAGO.toString().equals(f.getStatus());
 
             LocalDate vencimento = LocalDate.parse(f.getDataVencimento(), formato);
 

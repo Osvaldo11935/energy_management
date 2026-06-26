@@ -3,7 +3,8 @@ import javax.swing.*;
 import java.io.*;
 import SwingComponents.*;
 import modeloFiles.common.CrudFile;
-import models.SubestacaoModelo;
+import modelos.SubestacaoModelo;
+
 import java.util.*;
 
 public class SubestacaoFile extends CrudFile<SubestacaoModelo> {

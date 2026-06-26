@@ -5,7 +5,7 @@ import java.util.List;
 import anotacoes.ComboDadosProvedor;
 import anotacoes.ComboItem;
 import modeloFiles.ClienteFile;
-import models.UsuarioModelo;
+import modelos.UsuarioModelo;
 import utils.Session;
 
 public class ContratoProvedor implements ComboDadosProvedor {
@@ -15,7 +15,7 @@ public class ContratoProvedor implements ComboDadosProvedor {
         return ClienteFile.instaciar().listar()
                                       .stream()
                                       .filter(e -> e.getUsuarioId() == usuarioLogado.getId())
-                                      .map(e -> new ComboItem(e.getId(), e.getId() + "-" + e.getTipoContrato()))
+                                      .map(e -> new ComboItem(e.getId(), e.getId() + "-" + e.getTipoContrato(), null))
                                       .toList();
     }
 }

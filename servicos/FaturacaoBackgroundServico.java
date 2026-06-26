@@ -7,12 +7,11 @@ import java.util.*;
 import javax.swing.*;
 import enums.*;
 import modeloFiles.*;
-import models.*;
+import modelos.*;
 import utils.Session;
 
 public class FaturacaoBackgroundServico extends SwingWorker<Integer, String> {
 
-    //private static final DateTimeFormatter DATA = DateTimeFormatter.ISO_LOCAL_DATE;
     DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy/M/d");
     private static FaturacaoBackgroundServico instance;
 
@@ -44,17 +43,11 @@ public class FaturacaoBackgroundServico extends SwingWorker<Integer, String> {
         try {
             TarifaModelo tarifa = obterTarifa();
             List<ClienteModelo> clientes =
-                    clienteFile.buscarClientePorTipoContrato(TipoContrato.POS_PAGO);
+                    clienteFile.buscarClientePorTipoContrato(TipoContratoEnum.POS_PAGO);
 
             int total = clientes.size();
 
-            monitor = new ProgressMonitor(
-                    null,
-                    "Processando Facturação...",
-                    "Iniciando...",
-                    0,
-                    total
-            );
+            monitor = new ProgressMonitor(null, "Processando Facturação...", "Iniciando...", 0,total);
 
             monitor.setMillisToPopup(0);
             monitor.setMillisToDecideToPopup(0);
@@ -161,7 +154,7 @@ public class FaturacaoBackgroundServico extends SwingWorker<Integer, String> {
             if (atraso == 0) continue;
 
             double multa = f.getValorTotal() * (0.02 + (0.00033 * atraso));
-            f.setStatus(EstadoFatura.VENCIDO.toString());
+            f.setStatus(EstadoFaturaEnum.VENCIDO.toString());
             f.setValorMulta(multa);
             f.setValorActualizado(f.getValorTotal() + multa);
 
@@ -239,7 +232,7 @@ public class FaturacaoBackgroundServico extends SwingWorker<Integer, String> {
                 hoje.toString(),
                 hoje.plusDays(Session.getDiaToleranca()).toString(),
                 hoje.toString(),
-                EstadoFatura.PENDENTE.toString(),
+                EstadoFaturaEnum.PENDENTE.toString(),
                 0,
                 gerarNumero(id)
         );

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import modeloFiles.common.CrudFile;
-import models.AtalhoModelo;
+import modelos.AtalhoModelo;
 
 public class AtalhoFile extends CrudFile<AtalhoModelo> {
 

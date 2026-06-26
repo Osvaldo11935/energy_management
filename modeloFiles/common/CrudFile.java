@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.io.*;
 import java.util.*;
 import SwingComponents.*;
-import models.common.BaseModelo;
+import modelos.common.BaseModelo;
 
 public abstract class CrudFile<T extends BaseModelo> extends ObjectsFile {
 
@@ -12,19 +12,14 @@ public abstract class CrudFile<T extends BaseModelo> extends ObjectsFile {
 
     private final Class<T> classe;
 
-    public CrudFile(
-            String caminho,
-            T modelo,
-            Class<T> classe) {
+    public CrudFile(String caminho, T modelo, Class<T> classe) {
 
         super(caminho,modelo);
-
         this.modelo = modelo;
         this.classe = classe;
     }
 
-    protected T criarInstancia()
-            throws Exception {
+    protected T criarInstancia() throws Exception {
 
         return classe
                 .getDeclaredConstructor()
@@ -33,38 +28,34 @@ public abstract class CrudFile<T extends BaseModelo> extends ObjectsFile {
     public void salvarDados() {
 
         try {
+            List<T> dados = listar();
 
-            stream.seek(
-                    stream.length());
+            int novoId = dados.isEmpty() || dados == null ? 1 : dados.getLast().getId() + 1;
 
-            modelo.write(
-                    stream);
+            stream.seek(stream.length());
 
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Registo salvo com sucesso");
+            modelo.setId(novoId);
+
+            modelo.write(stream);
+
+            JOptionPane.showMessageDialog(null,"Registo salvo com sucesso");
 
         } catch (IOException ex) {
-
             ex.printStackTrace();
         }
     }
 
     public List<T> listar() {
 
-        List<T> lista =
-                new ArrayList<>();
+        List<T> lista = new ArrayList<>();
 
         try {
 
             stream.seek(4);
 
-            while (
-                    stream.getFilePointer()
-                            < stream.length()) {
+            while (stream.getFilePointer() < stream.length()) {
 
-                T obj =
-                        criarInstancia();
+                T obj = criarInstancia();
 
                 obj.read(stream);
 

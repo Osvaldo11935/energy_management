@@ -2,7 +2,7 @@ package seed;
 
 import java.util.*;
 import modeloFiles.*;
-import models.*;
+import modelos.*;
 
 public class SeedData {
 
@@ -27,8 +27,8 @@ public class SeedData {
         if (!perfis.isEmpty())
             return;
 
-        new PerfilModelo(1,"Administrador","Acesso total").salvarDados();
-        new PerfilModelo(2,"Cliente","Acesso Parcial").salvarDados();
+        new PerfilModelo("Administrador","Acesso total").salvarDados();
+        new PerfilModelo("Cliente","Acesso Parcial").salvarDados();
     }
 
 

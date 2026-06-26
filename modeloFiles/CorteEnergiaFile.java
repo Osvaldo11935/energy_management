@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.util.*;
 import SwingComponents.*;
 import modeloFiles.common.CrudFile;
-import models.CorteEnergiaModelo;
+import modelos.CorteEnergiaModelo;
 
 public class CorteEnergiaFile extends CrudFile<CorteEnergiaModelo> {
 

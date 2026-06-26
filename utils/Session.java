@@ -1,6 +1,6 @@
 package utils;
 
-import models.UsuarioModelo;
+import modelos.UsuarioModelo;
 
 public class Session {
     private static int diaAtraso;

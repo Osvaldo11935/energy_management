@@ -1,7 +1,7 @@
 package modeloFiles;
 
 import modeloFiles.common.CrudFile;
-import models. MenuModelo;
+import modelos.MenuModelo;
 
 public class MenuFile extends CrudFile<MenuModelo> {
 

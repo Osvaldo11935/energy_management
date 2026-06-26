@@ -8,5 +8,6 @@ public enum TipoCampo {
     EMAIL,
     TELEFONE,
     COMBO,
-    DATA
+    DATA,
+    TREE_CHECK
 }

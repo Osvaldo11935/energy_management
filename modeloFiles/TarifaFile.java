@@ -4,9 +4,9 @@ import java.io.*;
 import java.util.*;
 import javax.swing.*;
 
-import models.TarifaModelo;
 import SwingComponents.*;
 import modeloFiles.common.CrudFile;
+import modelos.TarifaModelo;
 public class TarifaFile extends CrudFile<TarifaModelo> {
 
     public TarifaFile(TarifaModelo model)

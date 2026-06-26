@@ -5,8 +5,8 @@ import java.util.*;
 import javax.swing.*;
 import SwingComponents.*;
 import modeloFiles.common.CrudFile;
-import models.MenuModelo;
-import models.PerfilModelo;
+import modelos.MenuModelo;
+import modelos.PerfilModelo;
 
 public class PerfilFile  extends CrudFile<PerfilModelo> {
 

@@ -2,15 +2,15 @@ package modeloFiles;
 import javax.swing.*;
 import java.io.*;
 import SwingComponents.*;
-import enums.TipoContrato;
-import enums.TipoNotificacao;
+import enums.TipoContratoEnum;
+import enums.TipoNotificacaoEnum;
 import modeloFiles.common.CrudFile;
-import java.util.*;
+import modelos.ClienteModelo;
+import modelos.CorteEnergiaModelo;
+import modelos.FaixaConsumoModelo;
+import modelos.NotificacaoModelo;
 
-import models.ClienteModelo;
-import models.CorteEnergiaModelo;
-import models.FaixaConsumoModelo;
-import models.NotificacaoModelo;
+import java.util.*;
 
 public class ClienteFile  extends CrudFile<ClienteModelo> {
 
@@ -47,7 +47,7 @@ public class ClienteFile  extends CrudFile<ClienteModelo> {
             0,
             "Aviso de Corte de Energia",
             "Informamos que existem faturas em atraso associadas ao seu contrato. Caso o débito não seja regularizado, o fornecimento de energia poderá ser interrompido conforme as condições do serviço.",
-            TipoNotificacao.CORTE.toString()
+            TipoNotificacaoEnum.CORTE.toString()
         );
         notificar.salvarDados();
     }
@@ -110,7 +110,7 @@ public class ClienteFile  extends CrudFile<ClienteModelo> {
         return lista;
     }
         
-    public List<ClienteModelo> buscarClientePorTipoContrato(TipoContrato tipoContrato) {
+    public List<ClienteModelo> buscarClientePorTipoContrato(TipoContratoEnum tipoContrato) {
 
         List<ClienteModelo> lista = new ArrayList<>();
 

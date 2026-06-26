@@ -5,7 +5,7 @@ import java.util.*;
 import javax.swing.*;
 import SwingComponents.*;
 import modeloFiles.common.CrudFile;
-import models.SolicitacaoModelo;
+import modelos.SolicitacaoModelo;
 
 public class SolicitacaoFile extends CrudFile<SolicitacaoModelo> {
 

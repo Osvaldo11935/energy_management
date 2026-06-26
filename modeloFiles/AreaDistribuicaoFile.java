@@ -4,9 +4,9 @@ import javax.swing.*;
 import java.io.*;
 import SwingComponents.*;
 import modeloFiles.common.CrudFile;
+import modelos.AreaDistribuicaoModelo;
 
 import java.util.*;
-import models.AreaDistribuicaoModelo;
 
 public class AreaDistribuicaoFile extends CrudFile<AreaDistribuicaoModelo> {
 

@@ -16,9 +16,7 @@ public class ProvinciaProvedor implements ComboDadosProvedor {
     
 
      List<Tabela3_2> provinciasss =
-            ProvinciaProvedor.carregardddcc(
-                System.getProperty("user.dir")
-                + "/data/Municipio.tab");
+            ProvinciaProvedor.carregardddcc(System.getProperty("user.dir") + "/data/Municipio.tab");
 
         for (Tabela3_2 provincia : provinciasss) {
 
@@ -31,9 +29,7 @@ public class ProvinciaProvedor implements ComboDadosProvedor {
         }
 
         List<Tabela2> provincias =
-            ProvinciaProvedor.carregarddd(
-                System.getProperty("user.dir")
-                + "/data/Provincia.tab");
+            ProvinciaProvedor.carregarddd(System.getProperty("user.dir") + "/data/Provincia.tab");
 
         for (Tabela2 provincia : provincias) {
 
@@ -44,20 +40,18 @@ public class ProvinciaProvedor implements ComboDadosProvedor {
         }
   
         return List.of(
-                new ComboItem(1,"Bengo"),
-                new ComboItem(2,"Benguela"),
-                new ComboItem(3,"Bie"),
-                new ComboItem(4,"Luanda")
+                new ComboItem(1,"Bengo",null),
+                new ComboItem(2,"Benguela",null),
+                new ComboItem(3,"Bie",null),
+                new ComboItem(4,"Luanda",null)
         );
     }
 
-        public static List<Tabela2> carregarddd(String ficheiro) {
+    public static List<Tabela2> carregarddd(String ficheiro) {
 
         List<Tabela2> lista = new ArrayList<>();
 
-        try (ObjectInputStream in =
-                new ObjectInputStream(
-                        new FileInputStream(ficheiro))) {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(ficheiro))) {
 
             // Nome do arquivo gravado
             String nomeArquivo = StrStream.Read_String(in);
@@ -88,9 +82,7 @@ public class ProvinciaProvedor implements ComboDadosProvedor {
 
         List<Tabela3_2> lista = new ArrayList<>();
 
-        try (ObjectInputStream in =
-                new ObjectInputStream(
-                        new FileInputStream(ficheiro))) {
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(ficheiro))) {
 
             // Nome do arquivo gravado
             String nomeArquivo = StrStream.Read_String(in);

@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.util.*;
 import SwingComponents.*;
 import modeloFiles.common.CrudFile;
-import models.NotificacaoModelo;
+import modelos.NotificacaoModelo;
 
 public class NotificacaoFile extends CrudFile<NotificacaoModelo> {
 

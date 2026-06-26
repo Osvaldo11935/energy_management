@@ -3,7 +3,7 @@ package provedores;
 import java.util.*;
 import anotacoes.*;
 import modeloFiles.AreaDistribuicaoFile;
-import models.AreaDistribuicaoModelo;
+import modelos.AreaDistribuicaoModelo;
 
 public class AreaDistribuicaoProvedor implements ComboDadosProvedor{
     @Override
@@ -14,7 +14,7 @@ public class AreaDistribuicaoProvedor implements ComboDadosProvedor{
                                      .listar();
 
         return areDistribuicoes.stream()
-                     .map(e-> new ComboItem(e.getId(), e.getProvincia()+ "-" + e.getBairro()))
+                     .map(e-> new ComboItem(e.getId(), e.getProvincia()+ "-" + e.getBairro(), null))
                      .toList();
     }
 }

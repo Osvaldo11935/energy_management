@@ -5,8 +5,8 @@ import java.util.List;
 import anotacoes.ComboDadosProvedor;
 import anotacoes.ComboItem;
 import modeloFiles.PerfilFile;
-import models.PerfilModelo;
-import models.UsuarioModelo;
+import modelos.PerfilModelo;
+import modelos.UsuarioModelo;
 import utils.Session;
 
 public class PerfilProvedor implements ComboDadosProvedor {
@@ -23,13 +23,13 @@ public class PerfilProvedor implements ComboDadosProvedor {
         {
             return perfis.stream()
                      .filter(e -> e.getNome().toLowerCase().equals("cliente"))
-                     .map(e-> new ComboItem(e.getId(), e.getNome()))
+                     .map(e-> new ComboItem(e.getId(), e.getNome(), null))
                      .toList();
         }
         else
         {
             return perfis.stream()
-                     .map(e-> new ComboItem(e.getId(), e.getNome()))
+                     .map(e-> new ComboItem(e.getId(), e.getNome(), null))
                      .toList();
         }
     }

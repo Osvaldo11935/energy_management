@@ -10,8 +10,8 @@ public class MunicipioProvedor implements ComboDadosProvedor{
     @Override
     public List<ComboItem> carregar() {
         return List.of(
-            new ComboItem(1, "Luanda"),
-            new ComboItem(2, "Bengo")
+            new ComboItem(1, "Luanda", null),
+            new ComboItem(2, "Bengo", null)
         );
     }
 }

@@ -51,7 +51,7 @@ public class TecladoProvedor implements ComboDadosProvedor {
                     itens.add(
                         new ComboItem(
                             mod + tecla,
-                            mod + tecla
+                            mod + tecla,null
                         )
                     );
                 }

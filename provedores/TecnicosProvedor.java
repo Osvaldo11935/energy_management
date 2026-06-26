@@ -13,7 +13,7 @@ public class TecnicosProvedor  implements ComboDadosProvedor {
         return UsuarioFile.instaciar().listar()
                                       .stream()
                                       .filter(e -> e.ehTecnico())
-                                      .map(e -> new ComboItem(e.getId(), e.getNomeUsuario()))
+                                      .map(e -> new ComboItem(e.getId(), e.getNomeUsuario(),null))
                                       .toList();
     }
 }

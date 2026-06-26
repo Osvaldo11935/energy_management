@@ -2,7 +2,8 @@ package modeloFiles;
 
 import SwingComponents.*;
 import modeloFiles.common.CrudFile;
-import models.UsuarioModelo;
+import modelos.UsuarioModelo;
+
 import javax.swing.*;
 import java.io.*;
 import java.util.*;

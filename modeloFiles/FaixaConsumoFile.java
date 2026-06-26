@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import modeloFiles.common.CrudFile;
-import models.ClienteModelo;
-import models.FaixaConsumoModelo;
+import modelos.ClienteModelo;
+import modelos.FaixaConsumoModelo;
 
 public class FaixaConsumoFile extends CrudFile<FaixaConsumoModelo> {
 

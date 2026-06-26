@@ -4,8 +4,8 @@ import java.util.*;
 import javax.swing.*;
 import SwingComponents.*;
 import modeloFiles.common.CrudFile;
-import models.ContadorModelo;
-import models.PessoaModelo;
+import modelos.ContadorModelo;
+import modelos.PessoaModelo;
 
 public class ContadorFile extends CrudFile<ContadorModelo> {
 

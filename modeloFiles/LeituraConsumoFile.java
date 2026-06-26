@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.util.*;
 import SwingComponents.*;
 import modeloFiles.common.CrudFile;
-import models.LeituraConsumoModelo;
+import modelos.LeituraConsumoModelo;
 
 public class LeituraConsumoFile extends CrudFile<LeituraConsumoModelo> {
 

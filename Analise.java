@@ -7,268 +7,326 @@ Data: 27.05.2026
 *******************************************/
 
 public class Analise {}
-    
-    /*
-     * 1. OBJECTIVO GERAL
-     * Desenvolver um sistema de gestão energética capaz de administrar o cadastro 
-     * de clientes, controlar pagamentos, gerenciar áreas de distribuição de energia 
-     * e contadores, enviar notificações sobre possíveis cortes, interrupções e 
-     * quedas no fornecimento de energia elétrica, além de permitir que os clientes 
-     * acompanhem e gerenciem o seu consumo energético, efetuem pagamentos, 
-     * visualizem as suas faturas em atraso para liquidação e interajam diretamente 
-     * com o provedor de energia para solicitações, consultas e acompanhamento de serviços.
+/*
+
+1. OBJECTIVO GERAL
+
+  Desenvolver um sistema de gestão energética capaz de administrar o cadastro de clientes, controlar pagamentos, 
+  gerenciar áreas de distribuição de energia e contadores, enviar notificações sobre possíveis cortes, interrupções e 
+  quedas no fornecimento de energia elétrica, além de permitir que os clientes acompanhem e gerenciem o seu consumo energético, efetuem pagamentos, 
+  visualizem as suas faturas em atraso para liquidação e interajam diretamente com o provedor de energia para solicitações, consultas e acompanhamento de serviços.
      
-     * 3. GUI - GRAPHIC USER INTERFACE (Telas)
-     * 
-     * 3.1 - Telas de Autenticação
-     *     - LoginVisao: Autenticação de utilizadores
-     *     - RecuperarSenhaVisao: Recuperação de palavra-passe
-     *     
-     * 3.2 - Telas Principais (Dashboard)
-     *     - MenuPrincipalVisao: Menu DINÂMICO gerado conforme perfil do usuário
-     *     - DashboardClienteVisao: Visão personalizada para clientes
-     *     - DashboardAdminVisao: Visão personalizada para administradores
-     *     - DashboardTecnicoVisao: Visão personalizada para técnicos
-     *     - DashboardGestorVisao: Visão personalizada para gestores
-     *     
-     * 3.3 - Telas de Gestão de Utilizadores e Perfis (RBAC)
-     *     - UsuarioCadastroVisao: Cadastro de novos usuários
-     *     - UsuarioConsultaVisao: Consulta de usuários
-     *     - UsuarioEdicaoVisao: Edição de dados do usuário
-     *     - PerfilCadastroVisao: Cadastro de perfis (ADMIN, CLIENTE, TECNICO, GESTOR)
-     *     - PerfilConsultaVisao: Consulta de perfis
-     *     - PerfilEdicaoVisao: Edição de perfis
-     *     - MenuCadastroVisao: Cadastro de menus do sistema
-     *     - MenuConsultaVisao: Consulta de menus
-     *     - PerfilMenuAtribuicaoVisao: Atribuição de menus a perfis
-     *     
-     * 3.4 - Telas de Gestão de Clientes
-     *     - ClienteCadastroVisao: Cadastro de novos clientes
-     *     - ClienteConsultaVisao: Consulta de clientes cadastrados
-     *     - ClienteEdicaoVisao: Edição de dados do cliente
-     *     
-     * 3.5 - Telas de Gestão de Áreas e Contadores
-     *     - AreaDistribuicaoVisao: Gestão de áreas de distribuição
-     *     - ContadorGestaoVisao: Cadastro e manutenção de contadores
-     *     - ContadorLeituraVisao: Leitura de consumos
-     *     
-     * 3.6 - Telas de Facturação e Pagamentos (Cliente)
-     *     - MinhasFacturasVisao: Lista todas as facturas do cliente
-     *     - FacturasAtrasoVisao: Mostra facturas em traço (vencidas)
-     *     - DetalheFacturaVisao: Visualização detalhada de uma factura
-     *     - PagamentoOnlineVisao: Interface para o cliente efetuar pagamento
-     *     - HistoricoPagamentosVisao: Histórico de pagamentos do cliente
-     *     - ComprovativoPagamentoVisao: Exibição e impressão do comprovativo
-     *     
-     * 3.7 - Telas de Gestão de Pessoas
-     *     - PessoaCadastroVisao: Cadastro de dados pessoais
-     *     - PessoaConsultaVisao: Consulta de pessoas
-     *     - PessoaEdicaoVisao: Edição de dados pessoais
-     *     
-     * 4. ESTRUTURA RBAC (Role-Based Access Control)
-     * 
-     * 4.1 - Tabela Pessoa (Dados Pessoais)
-     *     - id (PK)
-     *     - numeroBI
-     *     - nomeCompleto
-     *     - nomePai
-     *     - nomeMae
-     *     - dataNascimento
-     *     - estadoCivil
-     *     - genero
-     *     - residencia
-     *     - naturalidade
-     *     - documentoEmitidoEm
-     *     - documentoValidoAte
-     *     - altura
-	 *     - usuarioId (FK → Usuario.id)
-     *     - activo
-     * 
-     * 4.2 - Tabela Perfil (Role)
-     *     - id (PK)
-     *     - nome (ADMIN, CLIENTE, TECNICO, GESTOR, CONTABILISTA)
-     *     - descricao
-     *     - nivelAcesso (1-10, onde 10 é super admin)
-     *     - activo
-     * 
-     * 4.3 - Tabela Usuario 
-     *     - id (PK)
-     *     - perfilId (FK → Perfil.id)
-     *     - nomeUsuario (login)
-     *     - email
-     *     - numeroTelefone
-     *     - palavraPass (hash SHA-256)
-     *     - dataUltimoAcesso
-     *     - tentativasFalhas
-     *     - bloqueado (boolean)
-     *     - dataBloqueio
-     *     - activo
-     * 
-     * 4.4 - Tabela Menu (Estrutura de Menus)
-     *     - id (PK)
-     *     - menuPaiId (FK → Menu.id, para submenus, pode ser NULL)
-     *     - codigo (identificador único, ex: "CLIENTE.FACTURAS.ATRASO")
-     *     - nome (ex: "Facturas em Atraso")
-     *     - descricao (ex: "Visualiza facturas vencidas para pagamento")
-     *     - icone (nome do ícone, ex: "warning.png")
-     *     - caminhoClasse (Classe da view, ex: "views.cliente.FacturasAtrasoVisao")
-     *     - ordem (para ordenação dos menus)
-     *     - nivelMinimoAcesso (nível mínimo necessário)
-     *     - activo
-     * 
-     * 4.5 - Tabela PerfilMenu (Relacionamento Perfil x Menu)
-     *     - id (PK)
-     *     - perfilId (FK → Perfil.id)
-     *     - menuId (FK → Menu.id)
-     *     - podeVisualizar (boolean)
-     *     - podeCriar (boolean)
-     *     - podeEditar (boolean)
-     *     - podeEliminar (boolean)
-     *     - dataAtribuicao
-     * 
-     * 5. ENTIDADES PRINCIPAIS DO NEGÓCIO
-     * 
-     * 5.1 - ClienteModelo
-     *     int id;
-     *     String usuarioId; (FK → Usuario.id)
-     *     String tipoCliente (PESSOA_FISICA, PESSOA_JURIDICA);
-     *     String nif;
-     *     String areaDistribuicaoId;
-     *     String contadorId;
-     *     Date dataCadastro;
-     *     double saldoDevedor;
-     *     boolean activo;
-     * 
-     * 5.2 - AreaDistribuicaoModelo
-     *     int id;
-     *     String provincia;
-     *     String municipio;
-     *     String comuna;
-     *     String bairro;
-     *     String codigoPostal;
-     *     String subestacaoId;
-     *     boolean activo;
-     * 
-     * 5.3 - ContadorModelo
-     *     int id;
-     *     String numeroSerie;
-     *     String tipoContador (ANALOGICO, DIGITAL, INTELIGENTE);
-     *     String clienteId;
-     *     String areaId;
-     *     Date dataInstalacao;
-     *     double limiteConsumo;
-     *     boolean activo;
-     * 
-     * 5.4 - LeituraConsumoModelo
-     *     int id;
-     *     int contadorId;
-     *     double leituraAnterior;
-     *     double leituraActual;
-     *     double consumoKwh;
-     *     Date periodoInicio;
-     *     Date periodoFim;
-     *     Date dataLeitura;
-     *     String responsavelLeitura;
-     * 
-     * 5.5 - TarifaModelo
-     *     int id;
-     *     String nomeTarifa;
-     *     double precoKwh;
-     *     double taxaFixa;
-     *     double multaAtraso;
-     *     Date dataVigor;
-     *     boolean activo;
-     * 
-     * 5.6 - FacturaModelo
-     *     int id;
-     *     String clienteId;
-     *     String contadorId;
-     *     String leituraId;
-     *     String tarifaId;
-     *     double consumoKwh;
-     *     double valorTotal;
-     *     double valorMulta;
-     *     double valorActualizado;
-     *     Date dataEmissao;
-     *     Date dataVencimento;
-     *     Date dataPagamento;
-     *     String status;
-     *     int diasAtraso;
-     * 
-     * 5.7 - PagamentoModelo
-     *     int id;
-     *     int facturaId;
-     *     String clienteId;
-     *     double valorPago;
-     *     double valorMultaPaga;
-     *     Date dataPagamento;
-     *     String metodoPagamento;
-     *     String referenciaTransacao;
-     *     String status;
-     *     String comprovativoPath;
-     * 
-     * 5.8 - NotificacaoModelo
-     *     int id;
-     *     String clienteId;
-     *     String areaId;
-     *     String titulo;
-     *     String mensagem;
-     *     String tipo;
-     *     Date dataEnvio;
-     *     boolean lida;
-     * 
-     * 5.9 - SolicitacaoModelo
-     *     int id;
-     *     String clienteId;
-     *     String tipoSolicitacao;
-     *     String descricao;
-     *     String prioridade;
-     *     Date dataAbertura;
-     *     String status;
-     *     String tecnicoResponsavel;
-     * 
-     * 5.10 - CorteEnergiaModelo
-     *     int id;
-     *     String clienteId;
-     *     String areaId;
-     *     String motivo;
-     *     Date dataInicio;
-     *     Date dataFim;
-     *     String status;
-     * 
-     * 6. PERSISTÊNCIA DE DADOS
-     * 
-     * 6.1 - Tabelas de Apoio / Auxiliares (.tab)
-     *     Provincias.tab
-     *     Municipios.tab
-     *     Comunas.tab
-     *     Bairros.tab
-     *     TiposCliente.tab
-     *     TiposContador.tab
-     *     TiposTarifa.tab
-     *     MetodosPagamento.tab
-     *     TiposNotificacao.tab
-     *     TiposSolicitacao.tab
-     *     Prioridades.tab
-     *     StatusFactura.tab
-     * 
-     * 6.2 - Ficheiros de Dados (.DAT)
-     *     Pessoas.DAT
-     *     Perfis.DAT
-     *     Usuarios.DAT
-     *     Menus.DAT
-     *     PerfilMenus.DAT
-     *     Clientes.DAT
-     *     AreasDistribuicao.DAT
-     *     Contadores.DAT
-     *     LeituraConsumo.DAT
-     *     Tarifas.DAT
-     *     Facturas.DAT
-     *     Pagamentos.DAT
-     *     Notificacoes.DAT
-     *     Solicitacoes.DAT
-     *     CortesEnergia.DAT
-     * 7. Implementacao
-	 *	  Linguagem de Programacao: Java Swing 
-	 *	  IDE: NotePad++
+2. GUI - GRAPHIC USER INTERFACE (Telas)
+
+  ApresentacaoVisao
+  ConfiguracaoVisao
+  DetalheContratoVisao
+  DetalhePessoaVisao
+  DetalheUsuarioVisao
+  FaturacaoMonitorVisao
+
+  FormAreaDistribuicaoVisao (Formulário de cadastro e atualização das áreas de distribuição de energia.)
+  FormAtalhoVisao (Formulário de cadastro e atualização dos atalhos.)
+  FormClienteVisao (Formulário de cadastro e atualização dos contratos dos clientes.)
+  FormContadorVisao (Formulário de cadastro e atualização dos contadores.)
+  FormContratoVisao (Formulário que exibe as etapas do cadastro dos contratos, integrando o FormClienteVisao e o FormContadorVisao)
+  FormFaixaConsumoVisao (Formulário de cadastro e atualização das faixas de consumo.)
+  FormLoginVisao (Formulário para efetuar o login.)
+  FormMenuVisao (Formulário de cadastro e atualização dos menus.)
+  FormNotificacaoVisao (Formulário de cadastro e atualização das notificações.)
+  FormPerfilVisao (Formulário de cadastro e atualização dos perfis.)
+  FormPerfilMenuVisao (Formulário de cadastro e atualização dos menus vinculados a cada perfil.)
+  FormPessoaVisao (Formulário de cadastro e atualização dos dados pessoais dos utilizadores.)
+  FormSolicitacaoVisao (Formulário de cadastro e atualização das solicitações efetuadas pelos utilizadores (clientes).)
+  FormSubestacaoVisao (Formulário de cadastro e atualização das subestações.)
+  FormTarifaVisao (Formulário de cadastro e atualização das tarifas.)
+  FormUsuarioVisao (Formulário de cadastro e atualização dos utilizadores.)
+  FormWizardVisao (Formulário que exibe as etapas do cadastro dos utilizadores, integrando o FormUsuarioVisao e o FormPessoaVisao.)
+  
+  MenuPrincipalVisao
+  
+  NotificacoesVisao(Tela que vai exibir as notificações recebidas pelos usuarios(CLIENTE))
+  SolicitacaoDetalheVisao(Tela que vai exibir os detalhes das solicitações feitas pelos usuarios(CLIENTE))
+
+  TabelaAreaDistribuicaoVisao (Tabela responsável por exibir os dados das áreas de distribuição. Por intermédio da tabela é possível pesquisar, atualizar e remover um determinado registo.)
+  TabelaAtalhoVisao (Tabela responsável por exibir os dados dos atalhos. Por intermédio da tabela é possível pesquisar, atualizar e remover um determinado registo.)
+  TabelaCorteEnergiaVisao (Tabela responsável por exibir os dados dos cortes de energia. Por intermédio da tabela é possível pesquisar, atualizar e remover um determinado registo.)
+  TabelaFaixaConsumoVisao (Tabela responsável por exibir os dados das faixas de consumo. Por intermédio da tabela é possível pesquisar, atualizar e remover um determinado registo.)
+  TabelaFaturaVisao (Tabela responsável por exibir os dados das faturas. Por intermédio da tabela é possível pesquisar, atualizar e remover um determinado registo.)
+  TabelaMenuVisao (Tabela responsável por exibir os dados dos menus. Por intermédio da tabela é possível pesquisar, atualizar e remover um determinado registo.)
+  TabelaNotificacaoVisao (Tabela responsável por exibir os dados das notificações. Por intermédio da tabela é possível pesquisar, atualizar e remover um determinado registo.)
+  TabelaPerfilVisao (Tabela responsável por exibir os dados dos perfis. Por intermédio da tabela é possível pesquisar, atualizar e remover um determinado registo.)
+  TabelaPerfilMenuVisao (Tabela responsável por exibir os dados das associações entre perfis e menus. Por intermédio da tabela é possível pesquisar, atualizar e remover um determinado registo.)
+  TabelaSolicitacaoVisao (Tabela responsável por exibir os dados das solicitações. Por intermédio da tabela é possível pesquisar, atualizar e remover um determinado registo.)
+  TabelaSubestacaoVisao (Tabela responsável por exibir os dados das subestações. Por intermédio da tabela é possível pesquisar, atualizar e remover um determinado registo.)
+  TabelaTarifaVisao (Tabela responsável por exibir os dados das tarifas. Por intermédio da tabela é possível pesquisar, atualizar e remover um determinado registo.)
+  TabelaUsuariosVisao (Tabela responsável por exibir os dados dos utilizadores. Por intermédio da tabela é possível pesquisar, atualizar e remover um determinado registo.)
+
+  VisualizarFaturaVisao
+
+3. ENTIDADES PRINCIPAIS
+
+   AreaDistribuicaoModelo
+
+    int id;
+    String provincia;
+    String municipio;
+    String comuna;
+    String bairro;
+    String codigoPostal;
+    String subestacaoId;
+    boolean activo;
+
+   UsuarioModelo
+
+    int id;
+    int perfilId;
+    String nomeUsuario;
+    String email;
+    String numeroTelefone;
+    String palavraPass;
+    boolean activo
+
+   PessoaModelo
+
+    int id;
+    String numeroBI;
+    String nomeCompleto;
+    String nomePai;
+    String nomeMae;
+    String dataNascimento;
+    String estadoCivil;
+    String genero;
+    String residencia;
+    String naturalidade;
+    String documentoEmitidoEm;
+    String documentoValidoAte;
+    String altura;
+	int usuarioId;
+    boolean activo;
+
+   ClienteModelo
+
+    int id;
+    int usuarioId;
+    String tipoContrato;
+    String tipoCliente;
+    String areaDistribuicaoId;
+    Date dataCadastro;
+    double saldoDevedor;
+    double creditoDisponivel
+    double limiteConsumoMensal
+    boolean activo;
+
+   AtalhoModelo
+
+    int id;
+    int manuId;
+    String nome;
+    String descricao;
+    String teclado;
+    int usuarioId;
+    boolean activo;
+
+   ContadorModelo
+
+    int id;
+    String numeroSerie;
+    String tipoContador;
+    int clienteId;
+    Date dataInstalacao;
+    double limiteConsumo;
+    boolean activo;
+
+   CorteEnergiaModelo
+
+    int id;
+    int clienteId;
+    int areaId;
+    String motivo;
+    Date dataInicio;
+    Date dataFim;
+    String status;
+    boolean activo;
+
+   FaixaConsumoModelo
+
+    int id;
+    double limiteMaximo;
+    double limiteMinimo;
+    double preco;
+    String nome;
+    String descricao;
+    int ordem;
+    DataModelo dataCriacao;
+    DataModelo dataActualizacao;
+    double desconto;
+    boolean social;
+    String observacoes;
+    int tarifaId;
+    boolean activo;
+
+   FaturaModelo
+
+    int id;
+    int clienteId;
+    int contadorId;
+    int leituraId;
+    int tarifaId;
+    double consumoKwh;
+    double valorTotal;
+    double valorMulta;
+    double valorActualizado;
+    Date dataEmissao;
+    Date dataVencimento;
+    Date dataPagamento;
+    String status;
+    String numeroFatura;
+    int diasAtraso;
+    boolean activo;
+
+   LeituraConsumoModelo
+
+    int id;
+    int contadorId;
+    double leituraAnterior;
+    double leituraActual;
+    double consumoKwh;
+    Date periodoInicio;
+    Date periodoFim;
+    Date dataLeitura;
+    int responsavelLeituraId;
+    boolean activo;
+
+   MenuModelo
+
+    int id;
+    int menuPaiId;
+    String codigo;
+    String nome;
+    String descricao;
+    String icone;
+    String caminhoClasse;
+    int ordem;
+    int nivelMinimoAcesso;
+    boolean activo;
+
+   NotificacaoModelo
+
+    int id;
+    int clienteId;
+    int areaId;
+    StringBufferModelo titulo;
+    StringBufferModelo mensagem;
+    StringBufferModelo tipo;
+    Date dataEnvio;
+    boolean lida;
+    boolean activo;
+
+   PagamentoModelo
+
+    int id;
+    int facturaId;
+    int clienteId;
+    double valorPago;
+    double valorMultaPaga;
+    Date dataPagamento;
+    String metodoPagamento;
+    String referenciaTransacao;
+    String status;
+    String comprovativoPath;
+    boolean activo;
+
+   PerfilMenuModelo
+
+    int id;
+    int perfilId;
+    int menuId;
+    boolean podeVisualizar;
+    boolean podeCriar;
+    boolean podeEditar;
+    boolean podeEliminar;
+    Date dataAtribuicao;
+    boolean activo;
+
+   PerfilModelo
+
+    int id;
+    String nome;
+    String descricao;
+    boolean activo;
+
+   SolicitacaoModelo
+
+    int id;
+    int usuarioId;
+    int contratoId;
+    String tipoSolicitacao;
+    String descricao;
+    String prioridade;
+    Date dataAbertura;
+    String status;
+    int tecnicoResponsavelId;
+    int solicitacaoPaiId;
+    boolean activo;
+
+   SubestacaoModelo
+
+    int id;
+    String codigo;
+    String nome;
+    String localizacao;
+    String provincia;
+    String municipio;
+    double capacidade;
+    double tensaoNominal;
+    Date dataInstalacao;
+    Date ultimaManutencao;
+    int usuarioId;
+    double latitude;
+    double longitude;
+    String observacoes;
+    boolean activo;
+
+   TarifaModelo
+
+    int id;
+    StringBufferModelo nomeTarifa;
+    double precoKwh;
+    double taxaFixa;
+    double multaAtraso;
+    Date dataVigor;
+    boolean activo;
+
+4. PERSISTÊNCIA DE DADOS
+4.1 - Tabelas de Apoio /auxiliares
+
+    Provincias.tab
+    Municipios.tab
+    Comunas.tab
+
+4.2 - Ficheiros de Dados
+    AreasDistribuicao.DAT
+    Atalho.DAT
+    Clientes.DAT
+    Contadores.DAT
+    CortesEnergia.DAT
+    FaixaConsumo.DAT
+    Fatura.DAT
+    LeituraConsumo.DAT
+    Menus.DAT
+    Notificacao.DAT
+    Pagamento.DAT
+    PerfilMenu.DAT
+    Perfil.DAT
+    Pessoa.DAT
+    Solicitacao.DAT
+    Subestacao.DAT
+    Tarifa.DAT
+    Usuarios.DAT
+
+5. Implementacao
+	Linguagem de Programacao: Java Swing 
+	IDE: NotePad++
+
 */
